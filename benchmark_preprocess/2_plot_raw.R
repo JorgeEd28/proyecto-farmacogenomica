@@ -30,14 +30,14 @@ raw_green <- ggplot(raw_eset_batch[["G"]], aes(x = variable, y = log2(value), fi
 # Save RDS --------------------------------------------------------------------
 
 # Save PNG
-png(file.path(dir, "raw_red.png"), width = 1200, height = 600)
+png(file.path(dir, "raw_red.png"), width = 1200, height = 600, res = 300)
 print(raw_red)
 dev.off()
 
-png(file.path(dir, "raw_green.png"), width = 1200, height = 600)
+png(file.path(dir, "raw_green.png"), width = 1200, height = 600, res = 300)
 print(raw_green)
 dev.off()
 
 # Save RDS
-saveRDS(raw_red, file.path(outdir, "raw_red.rds"))
-saveRDS(raw_green, file.path(outdir, "raw_green.rds"))
+saveRDS(raw_red, file.path(dir, "raw_red.rds"))
+saveRDS(raw_green, file.path(dir, "raw_green.rds"))
