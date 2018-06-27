@@ -1,49 +1,76 @@
 library(Biobase)
 library(crlmm)
 library(hapmap370k)
-library(ff)
+library(dplyr)
+library(ggplot2)
+library(purrr)
+library(reshape2)
 
-########################
-##### Reading data #####
-########################
+# Specify directories ---------------------------------------------------------
 
-data.dir <- system.file("idatFiles", package="hapmap370k")
+# Input directory
+datadir <- "BENCHMARK"
+
+# Output directory
+outdir <- paste("R_Benchmark/")
+ldPath(outdir)
+dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
+
+# Reading data ----------------------------------------------------------------
+
 # Read in sample annotation info
-samples <- read.csv(file.path(data.dir, "samples370k.csv"), as.is=TRUE)
+samplesheet <- read.csv(file.path(datadir, "benchmark_samplesheet.csv"), 
+                        skip = 6, as.is = TRUE)
+arrayNames <- file.path(datadir, "intensity_data", 
+                        samplesheet[["SentrixBarcode_A"]],
+                        paste(samplesheet[["SentrixBarcode_A"]], 
+                              samplesheet[["SentrixPosition_A"]], 
+                              sep = "_"))
+arrayInfo <- list(barcode = "SentrixBarcode_A", position="SentrixPosition_A")
 
-# Read in .idats using sampleSheet information
-RG <- readIdatFiles(samples, path=data.dir,
-                    arrayInfoColNames=list(barcode=NULL,position="SentrixPosition"),saveDate=TRUE)
-pd <- pData(RG)
-arrayNames <- file.path(data.dir, unique(samples[, "SentrixPosition"]))
-arrayInfo <- list(barcode=NULL, position="SentrixPosition")
-# Generate dates as factors 
-scandatetime <- strptime(protocolData(RG)[["ScanDate"]], "%m/%d/%Y %H:%M:%S %p")
-datescanned <- substr(scandatetime, 1, 10)
-scanbatch <- factor(datescanned)
-levels(scanbatch) <- 1:16
-scanbatch = as.character(scanbatch)
+# Read raw .idats using sampleSheet information
+raw_cnSet <- readIdatFiles(sampleSheet = samplesheet, arrayNames = arrayNames,
+                           arrayInfoColNames = arrayInfo, saveDate = TRUE)
 
-# Plot
-par(mfrow=c(2,1), mai=c(0.4,0.4,0.4,0.1), oma=c(1,1,0,0))
-boxplot(log2(exprs(channel(RG, "R"))), xlab="Array", ylab="", names=1:40,
-        main="Red channel",outline=FALSE,las=2)
-boxplot(log2(exprs(channel(RG, "G"))), xlab="Array", ylab="", names=1:40,
-        main="Green channel",outline=FALSE,las=2)
-mtext(expression(log[2](intensity)), side=2, outer=TRUE)
-mtext("Array", side=1, outer=TRUE)
+# Generate data frame with expression data set
+batch <- as.Date(protocolData(raw_cnSet)[["ScanDate"]], 
+                        "%m/%d/%Y %H:%M:%S %p") %>% factor()
+levels(batch) <- 1:length(levels(batch))
+dict <- data.frame(variable = sampleNames(protocolData(raw_cnSet)), batch)
+raw_eset <- assayData(raw_cnSet) %>% as.list %>% map(as.data.frame) %>% map(melt)
+raw_eset_batch <- map2(raw_eset, list(dict), left_join) %>% 
+  map(.f = arrange, batch, variable)
 
-########################
-###### Genotyping ######
-########################
+# Plot raw data ---------------------------------------------------------------
 
-crlmmResult <- crlmmIllumina(sampleSheet=samples, arrayNames=arrayNames,
-                             arrayInfoColNames=arrayInfo, cdfName="human370v1c",
-                             batch=scanbatch)
-crlmmResult <- crlmmIllumina(samples, path=data.dir, arrayInfoColNames=arrayInfo, saveDate=TRUE, cdfName="human370v1c")
+# Red channel
+ggplot(raw_eset_batch[["R"]], aes(x = variable, y = log2(value), fill = batch)) + 
+  geom_boxplot(alpha=0.5) + scale_fill_brewer(palette = "Dark2") +
+  theme(axis.text.x = element_text(angle = 90)) + xlab("Microarreglo") +
+  labs(x = "Microarreglo", y = expression(paste("log"[2], "(intensidad)")))
 
+# Green channel
+ggplot(raw_eset_batch[["G"]], aes(x = variable, y = log2(value), fill = batch)) + 
+  geom_boxplot(alpha=0.5) + scale_fill_brewer(palette = "Dark2") +
+  theme(axis.text.x = element_text(angle = 90)) + xlab("Microarreglo") +
+  labs(x = "Microarreglo", y = expression(paste("log"[2], "(intensidad)")))
+
+# Preprocessing and genotyping ------------------------------------------------
+
+# Load package ff
+library(ff)
+options(ffcaching="ffeachflush")
+
+# Normalized data
+cnSet <- genotype.Illumina(sampleSheet = samplesheet, arrayNames = arrayNames,
+                           arrayInfoColNames = arrayInfo, cdfName = "human370v1c",
+                           batch = batch)
+
+# Plot normalized data --------------------------------------------------------
 plot(crlmmResult[["SNR"]][,], pch=as.numeric(scanbatch), xlab="Array", ylab="SNR",
      main="Signal-to-noise ratio per array",las=2)
+hist(crlmmResult[["SNR"]][,])
+plot(density(crlmmResult[["SNR"]][,]))
 
 
 
