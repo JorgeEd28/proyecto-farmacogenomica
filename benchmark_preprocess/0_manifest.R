@@ -60,7 +60,9 @@ all_genes <- getBM(attributes = c("chromosome_name","start_position","end_positi
                    filters = c("chromosome_name"), values = list(c(1:22,"X","Y")), mart = ensembl_db)
 all_genes_rd <- with(all_genes, GRanges(seqnames = chromosome_name, IRanges(start_position, end_position)))
 
-filter_var <- manifest_clean %>% anti_join(genes_by_snp)
+filter_var <- manifest_clean %>%
+  anti_join(genes_by_snp) %>%
+  filter(!is.na(Chr) & !is.na(MapInfo))
 filter_var_rd <- with(filter_var, GRanges(seqnames = Chr, IRanges(MapInfo, MapInfo)))
 
 var_overlaps <- findOverlaps(filter_var_rd, all_genes_rd)
