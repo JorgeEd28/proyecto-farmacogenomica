@@ -42,6 +42,6 @@ raw_eset_batch <- map2(raw_eset, list(dict), left_join) %>%
 # Save CSV --------------------------------------------------------------------
 
 write.csv(raw_eset_batch[["G"]], file.path(outdir, "raw_green_data.csv"),
-          quote = FALSE, na = "")
+          na = "", row.names = FALSE)
 write.csv(raw_eset_batch[["R"]], file.path(outdir, "raw_red_data.csv"),
-          quote = FALSE, na = "")
+          na = "", row.names = FALSE)
