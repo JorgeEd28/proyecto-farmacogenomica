@@ -36,9 +36,12 @@ batch <- as.Date(protocolData(raw_cnSet)[["ScanDate"]],
 levels(batch) <- 1:length(levels(batch))
 dict <- data.frame(variable = sampleNames(protocolData(raw_cnSet)), batch)
 raw_eset <- assayData(raw_cnSet) %>% as.list %>% map(as.data.frame) %>% map(melt)
-raw_eset_batch <- map2(raw_eset, list(dict), left_join) %>% 
-  map(.f = arrange, batch, variable)
+raw_eset_batch <- map2(raw_eset, list(dict), left_join) %>%
+  map(arrange, batch, variable)
 
-# Save RDS --------------------------------------------------------------------
+# Save CSV --------------------------------------------------------------------
 
-saveRDS(raw_eset_batch, file.path(outdir, "raw_eset.rds"))
+write.csv(raw_eset_batch[["G"]], file.path(outdir, "raw_green_data.csv"),
+          quote = FALSE, na = "")
+write.csv(raw_eset_batch[["R"]], file.path(outdir, "raw_red_data.csv"),
+          quote = FALSE, na = "")
