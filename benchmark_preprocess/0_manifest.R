@@ -38,7 +38,6 @@ manifest_clean <- manifest_renames %>% anti_join(add_chr, by = "IlmnID") %>%
 snp_db <- useMart("ENSEMBL_MART_SNP", dataset="hsapiens_snp", host="grch37.ensembl.org")
 # Ensembl gene db
 ensembl_db <- useMart("ensembl", dataset="hsapiens_gene_ensembl", host="grch37.ensembl.org")
-
 # Get gene names --------------------------------------------------------------
 
 # By SNP name
@@ -79,4 +78,5 @@ anno_df <- left_join(manifest_clean, genes_by_snp_pos)
 
 # Save annotation file
 
-write.csv(anno_df, quote = FALSE, na = "")
+write.csv(anno_df, file.path(datadir, "annotation_file.csv"), 
+          quote = FALSE, na = "")
