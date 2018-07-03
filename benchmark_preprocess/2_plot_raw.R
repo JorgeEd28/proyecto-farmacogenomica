@@ -11,8 +11,10 @@ dir <- "R_Benchmark"
 
 # Reading CSV -----------------------------------------------------------------
 
-raw_red_data <- read.csv(file.path(dir, "raw_red_data.csv"))
-raw_green_data <- read.csv(file.path(dir, "raw_green_data.csv"))
+raw_red_data <- read.csv(file.path(dir, "raw_red_data.csv"), 
+                         colClasses = c("factor", "integer", "factor"))
+raw_green_data <- read.csv(file.path(dir, "raw_green_data.csv"), 
+                           colClasses = c("factor", "integer", "factor"))
 
 # Plot raw data ---------------------------------------------------------------
 
