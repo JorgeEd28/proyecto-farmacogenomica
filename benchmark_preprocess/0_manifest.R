@@ -75,7 +75,7 @@ genes_by_pos <- data.frame(Variant = filter_var[queryHits(var_overlaps), "Varian
 
 genes_by_snp_pos <- rbind(genes_by_snp, genes_by_pos)
 
-anno_df <- left_join(manifest_clean, genes_by_snp_pos)
+anno_df <- left_join(manifest_clean, genes_by_snp_pos) %>% unique()
 
 # Save annotation file
 
