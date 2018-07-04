@@ -44,3 +44,5 @@ write.csv(raw_eset_batch[["G"]], file.path(outdir, "raw_green_data.csv"),
           na = "", row.names = FALSE, quote = FALSE)
 write.csv(raw_eset_batch[["R"]], file.path(outdir, "raw_red_data.csv"),
           na = "", row.names = FALSE, quote = FALSE)
+write.csv(dict, file.path(outdir, "sample-batch.csv"),
+          na = "", row.names = FALSE, quote = FALSE)
