@@ -64,7 +64,7 @@ dev.off()
 saveRDS(raw_red_boxplot, file.path(dir, "raw_red_boxplot.rds"))
 saveRDS(raw_green_boxplot, file.path(dir, "raw_green_boxplot.rds"))
 
-write.csv(raw_red_statistis, file.path(dir, "raw_red_statistis.csv"),
+write.csv(raw_red_statistis, file.path(dir, "raw_red_statistics.csv"),
           na = "", row.names = FALSE, quote = FALSE)
-write.csv(raw_green_statistis, file.path(dir, "raw_green_statistis.csv"),
+write.csv(raw_green_statistis, file.path(dir, "raw_green_statistics.csv"),
           na = "", row.names = FALSE, quote = FALSE)
