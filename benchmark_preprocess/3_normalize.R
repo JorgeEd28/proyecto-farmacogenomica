@@ -7,14 +7,15 @@ library(ff)
 
 # Specify directories ---------------------------------------------------------
 
+# ff options
+options(ffcaching="ffeachflush")
+
 # Input directory
 datadir <- "BENCHMARK"
 
 # Output directory
 outdir <- "R_Benchmark"
-
-# ff options
-options(ffcaching="ffeachflush")
+ldPath(outdir)
 
 # Reading data ----------------------------------------------------------------
 
@@ -33,9 +34,9 @@ arrayNames <- file.path(datadir, "intensity_data",
 
 # Annotation data frame -------------------------------------------------------
 
-anno_file <- manifest_raw %>%
-  cbind(isSnp = TRUE) %>%
-  rename(featureNames = Name, position = MapInfo, chromosome = Chr)
+anno_file <- manifest_raw %>% 
+  transmute(featureNames = Name, position = MapInfo, chromosome = Chr, isSnp = TRUE) %>%
+  unique()
 
 batch <- select(samplesheet, Sample_ID) %>% 
   left_join(batch_file, by = c("Sample_ID" = "variable")) %>% 

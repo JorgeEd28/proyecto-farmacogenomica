@@ -11,7 +11,6 @@ datadir <- "BENCHMARK"
 
 # Output directory
 outdir <- "R_Benchmark"
-ldPath(outdir)
 dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
 
 # Reading data ----------------------------------------------------------------
