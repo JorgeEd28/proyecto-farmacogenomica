@@ -21,9 +21,9 @@ options(ffcaching="ffeachflush")
 # Read in sample annotation info
 samplesheet <- read.csv(file.path(datadir, "benchmark_samplesheet.csv"), 
                         skip = 6, as.is = TRUE)
-manifest_raw <- read.csv(file.path(datadir, "CODIGO46_2017_01_20011739X343381_B1.csv"), 
+manifest_raw <- read.csv(file.path(datadir, "Manifest", "CODIGO46_2017_01_20011739X343381_B1.csv"), 
                          as.is = TRUE, skip = 7)
-batch <- read.csv(file.path(datadir, "sample-batch.csv"), 
+batch <- read.csv(file.path(outdir, "sample-batch.csv"), 
                   as.is = TRUE, colClasses = c("character", "factor"))
 arrayNames <- file.path(datadir, "intensity_data", 
                         samplesheet[["SentrixBarcode_A"]],
