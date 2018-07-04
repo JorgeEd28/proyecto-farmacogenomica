@@ -23,8 +23,8 @@ samplesheet <- read.csv(file.path(datadir, "benchmark_samplesheet.csv"),
                         skip = 6, as.is = TRUE)
 manifest_raw <- read.csv(file.path(datadir, "Manifest", "CODIGO46_2017_01_20011739X343381_B1.csv"), 
                          as.is = TRUE, skip = 7)
-batch <- read.csv(file.path(outdir, "sample-batch.csv"), 
-                  as.is = TRUE, colClasses = c("character", "factor"))
+batch_file <- read.csv(file.path(outdir, "sample-batch.csv"), 
+                  colClasses = "character")
 arrayNames <- file.path(datadir, "intensity_data", 
                         samplesheet[["SentrixBarcode_A"]],
                         paste(samplesheet[["SentrixBarcode_A"]], 
@@ -36,6 +36,10 @@ arrayNames <- file.path(datadir, "intensity_data",
 anno_file <- manifest_raw %>%
   cbind(isSnp = TRUE) %>%
   rename(featureNames = Name, position = MapInfo, chromosome = Chr)
+
+batch <- select(samplesheet, Sample_ID) %>% 
+  left_join(batch_file, by = c("Sample_ID" = "variable")) %>% 
+  with(batch)
 
 # Normalized data -------------------------------------------------------------
 
