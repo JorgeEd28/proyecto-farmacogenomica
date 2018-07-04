@@ -15,7 +15,6 @@ outdir <- "R_Benchmark"
 
 # ff options
 options(ffcaching="ffeachflush")
-setwd(outdir)
 
 # Reading data ----------------------------------------------------------------
 
@@ -40,6 +39,7 @@ anno_file <- manifest_raw %>%
 
 # Normalized data -------------------------------------------------------------
 
+setwd(outdir)
 cnSet <- genotype.Illumina(sampleSheet = samplesheet, arrayNames = arrayNames, 
                            call.method="krlmm", cdfName = "nopackage", 
                            anno = anno_file, genome = "hg19", batch = batch, 
@@ -48,6 +48,3 @@ cnSet <- genotype.Illumina(sampleSheet = samplesheet, arrayNames = arrayNames,
 # Save RDS --------------------------------------------------------------------
 
 saveRDS(cnSet, "normalize_data.rds")
-
-
-
