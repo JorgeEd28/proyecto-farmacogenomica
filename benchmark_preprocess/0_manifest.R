@@ -79,5 +79,5 @@ anno_df <- left_join(manifest_clean, genes_by_snp_pos)
 
 # Save annotation file
 
-write.csv(anno_df, file.path(datadir, "annotation_file.csv"), 
+write.csv(anno_df, file.path(outdir, "annotation_file.csv"), 
           quote = FALSE, na = "")
