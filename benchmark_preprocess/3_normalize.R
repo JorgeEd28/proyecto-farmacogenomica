@@ -34,9 +34,10 @@ arrayNames <- file.path(datadir, "intensity_data",
 
 # Annotation data frame -------------------------------------------------------
 
-anno_file <- manifest_raw %>% 
-  transmute(featureNames = Name, position = MapInfo, chromosome = Chr, isSnp = TRUE) %>%
-  unique()
+anno_file <- cbind(manifest_raw, isSnp = TRUE) %>% 
+  rename(featureNames = IlmnID, position = MapInfo, chromosome = Chr) %>%
+  filter(!Name %in% c("Extension", "Hybridization", "Non-Polymorphic", 
+                      "Non-Specific Binding", "Staining", "Stringency"))
 
 batch <- select(samplesheet, Sample_ID) %>% 
   left_join(batch_file, by = c("Sample_ID" = "variable")) %>% 
