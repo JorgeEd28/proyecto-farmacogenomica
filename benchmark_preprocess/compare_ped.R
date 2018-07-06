@@ -60,8 +60,8 @@ diff_snp_annotated <- diff_allele_annotated %>% group_by(variante) %>%
 # Get frequency table, delete variantes with 0 and 1 frequency
 frec_by_snp <- data.frame(variante = diff_snp_annotated[[1]],
                           frecuencia = rowSums(diff_snp_annotated[-1])) %>%
-  filter(frecuencia != c(0,1)) %>%
-  arrange(frecuencia)
+  filter(!frecuencia %in% c(0,1)) %>%
+  arrange(desc(frecuencia))
 
 # Plots -----------------------------------------------------------------------
 
@@ -78,7 +78,7 @@ prop_dens <- ggplot(prop_by_sample, aes(proporcion, color = "blue", fill="blue")
   labs(x = "Proporción", y = "Densidad")
 
 # Bar plot by variant (top 10)
-frec_bar <- ggplot(frec_by_snp[1:20,], aes(x = variante, y = frecuencia, fill = frecuencia)) +
+frec_bar <- ggplot(frec_by_snp[1:20,], aes(x = reorder(variante, -frecuencia), y = frecuencia, fill = frecuencia)) +
   geom_bar(stat = "identity", show.legend=F) + theme_minimal() + 
   theme(axis.text.x = element_text(angle = 90)) +
   labs(x = "Variante", y = "Frecuencia")
