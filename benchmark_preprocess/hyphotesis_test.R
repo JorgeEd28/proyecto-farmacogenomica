@@ -1,9 +1,13 @@
-# Hyphotesis test
+# Specify directories ---------------------------------------------------------
 
-data <- read.csv("prop_diff_by_sample.csv", as.is = TRUE)
+datadir <- "BENCHMARK"
 
-# Ho: p >= 0.05
-# Ha: p < 0.05
+# Hyphotesis test -------------------------------------------------------------
+
+data <- read.csv(file.path(datadir, "prop_diff_by_sample.csv"), as.is = TRUE)
+
+# Ho: p >= po
+# Ha: p < po
 
 # Declare variables
 p_hat <- mean(data[["proporcion"]])
