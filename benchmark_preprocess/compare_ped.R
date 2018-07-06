@@ -47,8 +47,8 @@ for(i in names(ped_1_t)){
 
 # Proportion of alleles of SNPs different in both PED
 prop_by_sample <- data.frame(muestra = colnames(diff_allele),
-                                 proporcion = colMeans(diff_allele), 
-                                 row.names = NULL) 
+                             proporcion = colMeans(diff_allele),
+                             row.names = NULL) 
 
 # Analysis by snp -------------------------------------------------------------
 
@@ -60,7 +60,7 @@ diff_snp_annotated <- diff_allele_annotated %>% group_by(variante) %>%
 # Get frequency table, delete variantes with 0 and 1 frequency
 frec_by_snp <- data.frame(variante = diff_snp_annotated[[1]],
                           frecuencia = rowSums(diff_snp_annotated[-1])) %>%
-  filter(frecuencia != c(0,1))
+  filter(frecuencia != c(0,1)) %>%
   arrange(frecuencia)
 
 # Plots -----------------------------------------------------------------------
