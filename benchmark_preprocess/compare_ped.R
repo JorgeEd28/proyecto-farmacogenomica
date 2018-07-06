@@ -37,41 +37,73 @@ ped_2_t <- as.data.frame(t(ped_2), stringsAsFactors = FALSE)
 colnames(ped_2_t) <- ped_2_t[2,]
 ped_2_t <- ped_2_t[-c(1:6),]
 
-# Compare
-not_equal_snp <- data.frame(row.names = 1:nrow(ped_1_t))
+# Compare by allele by SNPs
+diff_allele <- data.frame(row.names = 1:nrow(ped_1_t))
 for(i in names(ped_1_t)){
-  not_equal_snp[[i]] <- ifelse(ped_1_t[[i]] == ped_2_t[[i]], 0, 1)
+  diff_allele[[i]] <- ifelse(ped_1_t[[i]] == ped_2_t[[i]], 0, 1)
 }
 
 # Analysis by sample ----------------------------------------------------------
 
-prop_not_equal_snp <- data.frame(muestra = colnames(not_equal_snp),
-                                 proporcion = colMeans(not_equal_snp), 
+# Proportion of alleles of SNPs different in both PED
+prop_by_sample <- data.frame(muestra = colnames(diff_allele),
+                                 proporcion = colMeans(diff_allele), 
                                  row.names = NULL) 
+
+# Analysis by snp -------------------------------------------------------------
+
+# Annotate PED with variants
+diff_allele_annotated <- cbind(variante = rep(map_1[[2]], each = 2), diff_allele)
+# Group alleles by SNPs
+diff_snp_annotated <- diff_allele_annotated %>% group_by(variante) %>%
+  summarise_all(max)
+# Get frequency table, delete variantes with 0 and 1 frequency
+frec_by_snp <- data.frame(variante = diff_snp_annotated[[1]],
+                          frecuencia = rowSums(diff_snp_annotated[-1])) %>%
+  filter(frecuencia != c(0,1))
+  arrange(frecuencia)
 
 # Plots -----------------------------------------------------------------------
 
-# Bar plot
-prop_bar <- ggplot(prop_not_equal_snp, aes(x = reorder(muestra, -proporcion), y = proporcion, fill = proporcion)) +
+# Bar plot by sample
+prop_bar <- ggplot(prop_by_sample, aes(x = reorder(muestra, -proporcion), y = proporcion, fill = proporcion)) +
   geom_bar(stat = "identity", show.legend=F) + theme_minimal() + 
+  theme(axis.text.x = element_text(angle = 90)) +
   labs(x = "Microarreglo", y = "Proporción")
 
-# Density plot
-prop_dens <- ggplot(prop_not_equal_snp, aes(proporcion, color = "blue", fill="blue")) +
-  geom_density(alpha = 0.5, show.legend=F) +
-  labs(x = "Microarreglo", y = "Densidad")
+# Density plot by sample
+prop_dens <- ggplot(prop_by_sample, aes(proporcion, color = "blue", fill="blue")) +
+  geom_density(alpha = 0.5, show.legend=F) + 
+  theme(axis.text.x = element_text(angle = 90)) +
+  labs(x = "Proporción", y = "Densidad")
+
+# Bar plot by variant (top 10)
+frec_bar <- ggplot(frec_by_snp[1:20,], aes(x = variante, y = frecuencia, fill = frecuencia)) +
+  geom_bar(stat = "identity", show.legend=F) + theme_minimal() + 
+  theme(axis.text.x = element_text(angle = 90)) +
+  labs(x = "Variante", y = "Frecuencia")
 
 # Save RDS --------------------------------------------------------------------
 
 # Save PNG
-png(file.path(outdir, "prop_not_equal_snp_barplot.png"), width = 2400, height = 1200, res = 300)
+png(file.path(outdir, "prop_diff_by_sample_barplot.png"), width = 2400, height = 1200, res = 300)
 print(prop_bar)
 dev.off()
 
-png(file.path(outdir, "prop_not_equal_snp_density.png"), width = 2400, height = 1200, res = 300)
+png(file.path(outdir, "prop_diff_by_sample_density.png"), width = 2400, height = 1200, res = 300)
 print(prop_dens)
 dev.off()
 
+png(file.path(outdir, "frec_diff_by_snp_barplot.png"), width = 2400, height = 1200, res = 300)
+print(frec_bar)
+dev.off()
+
 # Save RDS and CSV
-saveRDS(prop_bar, file.path(outdir, "prop_not_equal_snp_barplot.rds"))
-saveRDS(prop_dens, file.path(outdir, "prop_not_equal_snp_density.rds"))
+saveRDS(prop_bar, file.path(outdir, "prop_diff_by_sample_barplot.rds"))
+saveRDS(prop_dens, file.path(outdir, "prop_diff_by_sample_density.rds"))
+saveRDS(frec_bar, file.path(outdir, "frec_diff_by_snp_barplot.png.rds"))
+
+write.csv(prop_by_sample, file.path(outdir, "prop_diff_by_sample.csv"),
+          quote = FALSE, row.names = FALSE)
+write.csv(frec_by_snp, file.path(outdir, "frec_diff_by_snp.csv"),
+          quote = FALSE, row.names = FALSE)
