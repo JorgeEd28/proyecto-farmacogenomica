@@ -62,6 +62,9 @@ frec_by_snp <- data.frame(variante = diff_snp_annotated[[1]],
                           frecuencia = rowSums(diff_snp_annotated[-1])) %>%
   filter(!frecuencia %in% c(0,1)) %>%
   arrange(desc(frecuencia))
+# Get number or variants differets by frequency
+frec_by_n_variants <- frec_by_snp %>% group_by(frecuencia) %>% 
+  summarize(n_variantes = n()) %>% ungroup() %>% arrange(desc(frecuencia))
 
 # Plots -----------------------------------------------------------------------
 
@@ -101,9 +104,11 @@ dev.off()
 # Save RDS and CSV
 saveRDS(prop_bar, file.path(outdir, "prop_diff_by_sample_barplot.rds"))
 saveRDS(prop_dens, file.path(outdir, "prop_diff_by_sample_density.rds"))
-saveRDS(frec_bar, file.path(outdir, "frec_diff_by_snp_barplot.png.rds"))
+saveRDS(frec_bar, file.path(outdir, "frec_diff_by_snp_barplot.rds"))
 
 write.csv(prop_by_sample, file.path(outdir, "prop_diff_by_sample.csv"),
           quote = FALSE, row.names = FALSE)
 write.csv(frec_by_snp, file.path(outdir, "frec_diff_by_snp.csv"),
+          quote = FALSE, row.names = FALSE)
+write.csv(frec_by_n_variants, file.path(outdir, "frec_diff_by_n_variants.csv"),
           quote = FALSE, row.names = FALSE)
