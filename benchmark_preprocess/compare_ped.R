@@ -13,11 +13,11 @@ outdir <- "R_Benchmark"
 
 map_1 <- read.table(file.path(datadir, "Benchmark", "PLINK_030718_0158", "Benchmark.map"), 
                     sep = "\t", colClasses = "character")
-map_2 <- read.table(file.path(datadir, "MAPC46.MAP"), 
+map_2 <- read.table(file.path(datadir, "Benchmark_C46.map"), 
                     sep = "\t", colClasses = "character")
 ped_1 <- read.table(file.path(datadir, "Benchmark", "PLINK_030718_0158", "Benchmark.ped"), 
                     sep = "\t", colClasses = "character")
-ped_2 <- read.table(file.path(datadir, "MAPC46.PED"), 
+ped_2 <- read.table(file.path(datadir, "Benchmark_C46.ped"), 
                     sep = "\t", colClasses = "character")
 
 # Compare MAPs ----------------------------------------------------------------
