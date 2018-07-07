@@ -1,6 +1,6 @@
 # Specify directories ---------------------------------------------------------
 
-datadir <- "BENCHMARK"
+datadir <- "R_Benchmark"
 
 # Hyphotesis test -------------------------------------------------------------
 
@@ -11,10 +11,10 @@ data <- read.csv(file.path(datadir, "prop_diff_by_sample.csv"), as.is = TRUE)
 
 # Declare variables
 p_hat <- mean(data[["proporcion"]])
-po <- 0.05
+po <- 0.01
 s <- sd(data[["proporcion"]])
 n <- nrow(data)
-alpha <- 0.05
+alpha <- 0.01
 
 # Critical value
 t <- sqrt(n)*(p_hat - po)/s
