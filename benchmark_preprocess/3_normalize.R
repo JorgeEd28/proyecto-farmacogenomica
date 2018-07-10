@@ -34,10 +34,13 @@ arrayNames <- file.path(datadir, "intensity_data",
 
 # Annotation data frame -------------------------------------------------------
 
+# Annotation file MUST be named as "anno" (issue in crlmm package)
 anno <- cbind(manifest_raw, isSnp = TRUE) %>% 
   rename(featureNames = IlmnID, position = MapInfo, chromosome = Chr) %>%
   filter(!Name %in% c("Extension", "Hybridization", "Non-Polymorphic", 
                       "Non-Specific Binding", "Staining", "Stringency"))
+# "anno" MUST have rownames as the featureNames (issue in crlmm package)
+rownames(anno) <- anno[["featureNames"]]
 
 batch <- select(samplesheet, Sample_ID) %>% 
   left_join(batch_file, by = c("Sample_ID" = "variable")) %>% 
@@ -48,11 +51,7 @@ batch <- select(samplesheet, Sample_ID) %>%
 cnSet <- genotype.Illumina(sampleSheet = samplesheet, arrayNames = arrayNames, 
                            call.method="krlmm", cdfName = "nopackage", 
                            anno = anno, genome = "hg19", batch = batch, 
-<<<<<<< HEAD
                            quantile.method="within", nopackage.norm="quantile")
-=======
-                           quantile.method="between", nopackage.norm="quantile")
->>>>>>> 59e2e4da431acda55c1078d731f7cdad030fed0c
 
 # Save RDS --------------------------------------------------------------------
 
