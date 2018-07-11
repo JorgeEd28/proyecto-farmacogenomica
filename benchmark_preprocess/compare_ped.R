@@ -1,5 +1,6 @@
 library(dplyr)
 library(ggplot2)
+library(UpSetR)
 
 # Specify directories ---------------------------------------------------------
 
@@ -62,9 +63,13 @@ frec_by_snp <- data.frame(variante = diff_snp_annotated[[1]],
                           frecuencia = rowSums(diff_snp_annotated[-1])) %>%
   filter(!frecuencia %in% c(0,1)) %>%
   arrange(desc(frecuencia))
-# Get number or variants differets by frequency
+# Get number of different by frequency
 frec_by_n_variants <- frec_by_snp %>% group_by(frecuencia) %>% 
   summarize(n_variantes = n()) %>% ungroup() %>% arrange(desc(frecuencia))
+
+# Get the samples with shared genotypes between PEDs for each SNP
+shared_snp_samps <- apply(fidd_snp_annotated[-1], 1, function(x) which(x == 0))
+names(shared_snp_samps) <- diff_snp_annotated$variante
 
 # Plots -----------------------------------------------------------------------
 
@@ -86,6 +91,12 @@ frec_bar <- ggplot(frec_by_snp[1:20,], aes(x = reorder(variante, -frecuencia), y
   theme(axis.text.x = element_text(angle = 90)) +
   labs(x = "Variante", y = "Frecuencia")
 
+# UpSet plot of shared variants between both PEDs in all samples
+isec.plot <- upset(fromList(shared_snp_samps), order.by = "freq", nsets = 10, 
+                   mainbar.y.label = "Samples per intersection", 
+                   sets.x.label = "Samples per variant", 
+                   main.bar.color = "dodgerblue", sets.bar.color = "violetred3")
+
 # Save RDS --------------------------------------------------------------------
 
 # Save PNG
@@ -101,10 +112,15 @@ png(file.path(outdir, "frec_diff_by_snp_barplot.png"), width = 2400, height = 12
 print(frec_bar)
 dev.off()
 
+png(file.path(outdir, "isec_plot.png"), width = 2400, height = 1200, res = 300)
+print(isec.plot)
+dev.off()
+
 # Save RDS and CSV
 saveRDS(prop_bar, file.path(outdir, "prop_diff_by_sample_barplot.rds"))
 saveRDS(prop_dens, file.path(outdir, "prop_diff_by_sample_density.rds"))
 saveRDS(frec_bar, file.path(outdir, "frec_diff_by_snp_barplot.rds"))
+saveRDS(isec.plot, file.path(outdir, "isec_plot.rds"))
 
 write.csv(prop_by_sample, file.path(outdir, "prop_diff_by_sample.csv"),
           quote = FALSE, row.names = FALSE)
