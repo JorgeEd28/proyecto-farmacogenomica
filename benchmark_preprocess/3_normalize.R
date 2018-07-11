@@ -51,7 +51,8 @@ batch <- select(samplesheet, Sample_ID) %>%
 cnSet <- genotype.Illumina(sampleSheet = samplesheet, arrayNames = arrayNames, 
                            call.method="krlmm", cdfName = "nopackage", 
                            anno = anno, genome = "hg19", batch = batch, 
-                           quantile.method="within", nopackage.norm="quantile")
+                           stripNorm = TRUE, quantile.method="within",
+                           nopackage.norm="quantile")
 
 # Save RDS --------------------------------------------------------------------
 
