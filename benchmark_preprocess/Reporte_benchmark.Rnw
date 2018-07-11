@@ -1,0 +1,44 @@
+\documentclass{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[english,main=spanish]{babel}
+\usepackage{authblk,amssymb,amsthm,amsmath,lipsum}
+\usepackage{fancyhdr}
+\usepackage[letterpaper, margin=3cm]{geometry}
+\renewcommand{\figurename}{Figura}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Validación de archivos MAP y PED}
+\rfoot{\thepage}
+
+\title{Análisis de microarreglos de genotipificación}
+\subtitle{Validación de archivos MAP y PED}
+\author{Sergio Villicaña Muñoz, Jorge Peña Velasco}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+El siguiente documento reporta los resultados obtenidos de la validación de los archivos MAP y PED originales (entregados por la empresa Código 46), a partir de distintos análisis con los archivos IDAT crudos, que contienen las cuantificación de señal asociada a las variantes del chip Infinium Global Screening Array-24 Kit de Illumina, y personalizado para el Instituto Nacional de Medicina Genómica. Dicho análisis se llevó a cabo utilizando herramientas de código abierto y licencia gratuita; entre éstas se encuentran \texttt{R}, los paquetes \texttt{Bioconductor}, \texttt{crlmm} y \texttt{ggplot2}, GenomeStudio Software© de Illumina, Inc., y \LaTeX para la generación de reportes.
+
+La validación contó con los siguientes pasos:
+\begin{enumerate}
+  \item Análisis de IDAT crudos con GenomeStudio
+  \item Genotipificación y generación de archivos PED y MAP con GenomeStudio
+  \item \textit{Benchmark} (comparación) de archivos PED y MAP generados con GenomeStudio, con archivos PED y MAP originales
+  \item Análisis y genotipificación de IDAT crudos con paquetería de \texttt{R}
+  \item \textit{Benchmark} de archivos PED y MAP generados con \texttt{R}, con archivos PED y MAP originales
+\end{enumerate}
+
+\section*{Análisis y genotipificación en GenomeStudio}
+
+\section*{\textit{Benchmark} con archivos generados en GenomeStudio}
+
+\section*{Análisis y y genotipificación en \texttt{R}}
+
+\section*{\textit{Benchmark} con archivos generados \texttt{R}}
+
+\section*{Conclusiones}
+
+\end{document}
