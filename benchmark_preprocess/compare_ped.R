@@ -68,7 +68,7 @@ frec_by_n_variants <- frec_by_snp %>% group_by(frecuencia) %>%
   summarize(n_variantes = n()) %>% ungroup() %>% arrange(desc(frecuencia))
 
 # Get the samples with shared genotypes between PEDs for each SNP
-shared_snp_samps <- apply(fidd_snp_annotated[-1], 1, function(x) which(x == 0))
+shared_snp_samps <- apply(diff_snp_annotated[-1], 1, function(x) which(x == 0))
 names(shared_snp_samps) <- diff_snp_annotated$variante
 
 # Plots -----------------------------------------------------------------------
