@@ -16,11 +16,7 @@
 \author{Sergio Villicaña Muñoz, Jorge Peña Velasco}
 \date{\today}
 
-\setlength{\parindent}{4em}
-\setlength{\parskip}{1em}
-
 \begin{document}
-\SweaveOpts{concordance=TRUE}
 
 \maketitle
 
@@ -34,6 +30,28 @@ La validación contó con los siguientes pasos:
   \item Análisis y genotipificación de IDAT crudos con paquetería de \texttt{R}
   \item \textit{Benchmark} de archivos PED y MAP generados con \texttt{R}, con archivos PED y MAP originales
 \end{enumerate}
+
+
+% Load RDS and requiered packages
+<<load, echo = FALSE, results= "hide", warning = FALSE, message = FALSE>>=
+library(ggplot2)
+library(tikzDevice) # Pretty plots with LaTeX
+
+dir <- "R_Benchmark"
+
+# Graphs
+raw_red_boxplot <- readRDS(file.path(dir, "raw_red_boxplot.rds"))
+raw_green_boxplot <- readRDS(file.path(dir, "raw_green_boxplot.rds"))
+norm_red_boxplot <- readRDS(file.path(dir, "norm_red_boxplot.rds"))
+norm_green_boxplot <- readRDS(file.path(dir, "norm_green_boxplot.rds"))
+
+# Tables
+raw_red_statistics <- read.csv(file.path(dir, "raw_red_statistics.csv"), as.is = TRUE)
+raw_green_statistics <- read.csv(file.path(dir, "raw_green_statistics.csv"), as.is = TRUE)
+norm_red_statistics <- read.csv(file.path(dir, "norm_red_statistics.csv"), as.is = TRUE)
+norm_green_statistics <- read.csv(file.path(dir, "norm_green_statistics.csv"), as.is = TRUE)
+@
+
 
 \section*{Análisis y genotipificación en GenomeStudio}
 
@@ -49,8 +67,27 @@ Para la comparación del análisis que llevamos a cabo en GenomeStudio y el real
 
 \section*{Análisis y y genotipificación en \texttt{R}}
 
+Para la la normalización, análisis y genotipificación en \texttt{R}, se utilizó el paquete \texttt{crlmm}\cite{scharpf2011using}, a través de \texttt{Bioconductor}, diseñado con modelos multinivel para plataformas de microarreglos como Affymetrix e Illumina \cite{ritchie2009r}. Éste paquete es una implementación del algoritmo CRLMM para producir el llamado de genotipes, puntajes de confianza y métricas de calidad adicionales para las variantes y las muestras 
+
+\subsection*{Análisis exploratorio}
+
+En primer lugar, se hizo un análisis exploratorio de los valores de intensidad lumínica de ambos canales de cada microarreglo muestra, para identificar efectos de lote y muestras con comportamientos aberrantes. Los lotes se diferenciaron por días de corrida de los microarreglos.
+
+En las figuras \ref{fig:raw_red_boxplot} y \ref{fig:raw_green_boxplot} se muestran los \textit{boxplot} de los valores de intensidad lumínica (transformados a $log_2$ para facilitar la visualización), de los canales rojo y verde, respectivamente.
+
+<<raw_red_boxplot, echo=FALSE, dev='tikz', fig.height = 4, fig.cap = "Boxplot por muestra de logaritmo de la intensidad lumínica del canal rojo">>=
+raw_red_boxplot
+@
+
+<<raw_green_boxplot, echo=FALSE, dev='tikz', fig.height = 4, fig.cap = "Boxplot de logaritmo de la intensidad lumínica del canal verde por muestra">>=
+raw_green_boxplot
+@
+
 \section*{\textit{Benchmark} con archivos generados \texttt{R}}
 
 \section*{Conclusiones}
+
+\bibliographystyle{unsrt}
+\bibliography{repbench}
 
 \end{document}
