@@ -30,6 +30,7 @@ add_chr <- manifest_renames %>%
   select(-Position)
   
 manifest_clean <- manifest_renames %>% anti_join(add_chr, by = "IlmnID") %>%
+  filter(!Chr == "") %>%
   bind_rows(add_chr)
 
 # Select databases ------------------------------------------------------------
@@ -77,7 +78,19 @@ genes_by_snp_pos <- rbind(genes_by_snp, genes_by_pos)
 
 anno_df <- left_join(manifest_clean, genes_by_snp_pos) %>% unique()
 
+# Separate
+
+anno_df_es <- anno_df %>% filter(!is.na(Gene))
+anno_df_e <- anno_df %>% filter(!is.na(Ensembl), is.na(Gene))
+anno_df_emp <- anno_df %>% filter(is.na(Ensembl))
+
 # Save annotation file
 
 write.csv(anno_df, file.path(outdir, "annotation_file.csv"), 
+          quote = FALSE, row.names = FALSE, na = "")
+write.csv(anno_df_es, file.path(outdir, "annotation_file_ensembl_symbol.csv"), 
+          quote = FALSE, row.names = FALSE, na = "")
+write.csv(anno_df_e, file.path(outdir, "annotation_file_ensembl_no_symbol.csv"), 
+          quote = FALSE, row.names = FALSE, na = "")
+write.csv(anno_df_emp, file.path(outdir, "annotation_file_no_ensembl_no_symbol.csv"), 
           quote = FALSE, row.names = FALSE, na = "")

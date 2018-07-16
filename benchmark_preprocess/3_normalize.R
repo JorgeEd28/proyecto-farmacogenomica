@@ -37,8 +37,7 @@ arrayNames <- file.path(datadir, "intensity_data",
 # Annotation file MUST be named as "anno" (issue in crlmm package)
 anno <- cbind(manifest_raw, isSnp = TRUE) %>% 
   rename(featureNames = IlmnID, position = MapInfo, chromosome = Chr) %>%
-  filter(!Name %in% c("Extension", "Hybridization", "Non-Polymorphic", 
-                      "Non-Specific Binding", "Staining", "Stringency"))
+  filter(!Chr == "")
 # "anno" MUST have rownames as the featureNames (issue in crlmm package)
 rownames(anno) <- anno[["featureNames"]]
 
