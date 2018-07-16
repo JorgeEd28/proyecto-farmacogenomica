@@ -58,7 +58,7 @@ genes_by_snp <- genes_by_snp_ensembl %>%
 
 # By position
 all_genes <- getBM(attributes = c("chromosome_name","start_position","end_position","ensembl_gene_id","hgnc_symbol"),
-                   filters = c("chromosome_name"), values = list(c(1:22,"X","Y")), mart = ensembl_db)
+                   filters = c("chromosome_name"), values = list(c(1:22,"X","Y", "MT")), mart = ensembl_db)
 all_genes_rd <- with(all_genes, GRanges(seqnames = chromosome_name, IRanges(start_position, end_position)))
 
 filter_var <- manifest_clean %>%
