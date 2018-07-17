@@ -77,7 +77,7 @@ prop_by_sample <- data.frame(muestra = colnames(diff_allele),
 diff_snp <- diff_allele
 diff_snp[diff_snp == 2] <- 1
 # Get frequency table, delete variantes with 0 and 1 frequency
-frec_by_snp <- data.frame(variante = calls_crlmm_var,
+frec_by_snp <- data.frame(variante = calls_crlmm_var[["Name"]],
                           frecuencia = rowSums(diff_snp))
 # Get number of different by frequency
 frec_by_n_variants <- frec_by_snp %>% group_by(frecuencia) %>% 
@@ -92,8 +92,8 @@ prop_bar <- ggplot(prop_by_sample, aes(x = reorder(muestra, -proporcion), y = pr
   labs(x = "Microarreglo", y = "Proporción")
 
 # Density plot by sample
-prop_dens <- ggplot(prop_by_sample, aes(proporcion, color = "blue", fill="blue")) +
-  geom_density(alpha = 0.5, show.legend=F) + 
+prop_dens <- ggplot(prop_by_sample, aes(x = proporcion, y = ..scaled.., color = "blue", fill="blue")) +
+  geom_density(alpha = 0.5, show.legend=F, adjust = 1) + 
   theme(axis.text.x = element_text(angle = 90)) +
   labs(x = "Proporción", y = "Densidad")
 

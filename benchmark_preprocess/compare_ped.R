@@ -80,7 +80,7 @@ prop_bar <- ggplot(prop_by_sample, aes(x = reorder(muestra, -proporcion), y = pr
   labs(x = "Microarreglo", y = "Proporción")
 
 # Density plot by sample
-prop_dens <- ggplot(prop_by_sample, aes(proporcion, color = "blue", fill="blue")) +
+prop_dens <- ggplot(prop_by_sample, aes(x = proporcion, y = ..scaled.., color = "blue", fill="blue")) +
   geom_density(alpha = 0.5, show.legend=F) + 
   theme(axis.text.x = element_text(angle = 90)) +
   labs(x = "Proporción", y = "Densidad")
