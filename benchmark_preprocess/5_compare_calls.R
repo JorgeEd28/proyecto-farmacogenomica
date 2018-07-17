@@ -78,7 +78,8 @@ diff_snp <- diff_allele
 diff_snp[diff_snp == 2] <- 1
 # Get frequency table, delete variantes with 0 and 1 frequency
 frec_by_snp <- data.frame(variante = calls_crlmm_var[["Name"]],
-                          frecuencia = rowSums(diff_snp))
+                          frecuencia = rowSums(diff_snp)) %>%
+  arrange(desc(frecuencia))
 # Get number of different by frequency
 frec_by_n_variants <- frec_by_snp %>% group_by(frecuencia) %>% 
   summarize(n_variantes = n()) %>% ungroup() %>% arrange(desc(frecuencia))

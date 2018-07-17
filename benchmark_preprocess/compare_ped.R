@@ -61,7 +61,6 @@ diff_snp_annotated <- diff_allele_annotated %>% group_by(variante) %>%
 # Get frequency table, delete variantes with 0 and 1 frequency
 frec_by_snp <- data.frame(variante = diff_snp_annotated[[1]],
                           frecuencia = rowSums(diff_snp_annotated[-1])) %>%
-  filter(!frecuencia %in% c(0,1)) %>%
   arrange(desc(frecuencia))
 # Get number of different by frequency
 frec_by_n_variants <- frec_by_snp %>% group_by(frecuencia) %>% 
