@@ -58,7 +58,71 @@ diff_allele <- data.frame(row.names = 1:nrow(calls_crlmm))
 for(i in names(calls_crlmm)){
   diff_allele[[i]] <- abs(calls_crlmm[[i]] - calls_gs_recode[[i]])
 }
+diff_allele[is.na(diff_allele)] <- 2
+colnames(diff_allele) <- sub("^X[0-9]*?", "", colnames(calls_crlmm))
 
+# Analysis by sample ----------------------------------------------------------
 
-#colnames(calls_crlmm) <- sub("^X[0-9]*?", "", colnames(calls_crlmm))
+# Proportion of alleles of SNPs different in both PED
+prop_by_sample <- data.frame(muestra = colnames(diff_allele),
+                             proporcion = colMeans(diff_allele)/2,
+                             row.names = NULL)
 
+# Analysis by snp -------------------------------------------------------------
+
+# Annotate PED with variants
+diff_snp <- diff_allele
+diff_snp[diff_snp == 2] <- 1
+# Get frequency table, delete variantes with 0 and 1 frequency
+frec_by_snp <- data.frame(variante = calls_crlmm_var,
+                          frecuencia = rowSums(diff_snp))
+# Get number of different by frequency
+frec_by_n_variants <- frec_by_snp %>% group_by(frecuencia) %>% 
+  summarize(n_variantes = n()) %>% ungroup() %>% arrange(desc(frecuencia))
+
+# Plots -----------------------------------------------------------------------
+
+# Bar plot by sample
+prop_bar <- ggplot(prop_by_sample, aes(x = reorder(muestra, -proporcion), y = proporcion, fill = proporcion)) +
+  geom_bar(stat = "identity", show.legend=F) + theme_minimal() + 
+  theme(axis.text.x = element_text(angle = 90)) +
+  labs(x = "Microarreglo", y = "Proporción")
+
+# Density plot by sample
+prop_dens <- ggplot(prop_by_sample, aes(proporcion, color = "blue", fill="blue")) +
+  geom_density(alpha = 0.5, show.legend=F) + 
+  theme(axis.text.x = element_text(angle = 90)) +
+  labs(x = "Proporción", y = "Densidad")
+
+# Bar plot by variant (top 10)
+frec_bar <- ggplot(frec_by_snp[1:20,], aes(x = reorder(variante, -frecuencia), y = frecuencia, fill = frecuencia)) +
+  geom_bar(stat = "identity", show.legend=F) + theme_minimal() + 
+  theme(axis.text.x = element_text(angle = 90)) +
+  labs(x = "Variante", y = "Frecuencia")
+
+# Save RDS --------------------------------------------------------------------
+
+# Save PNG
+png(file.path(outdir, "prop_diff_by_sample_barplot_r_gs.png"), width = 2400, height = 1200, res = 300)
+print(prop_bar)
+dev.off()
+
+png(file.path(outdir, "prop_diff_by_sample_density_r_gs.png"), width = 2400, height = 1200, res = 300)
+print(prop_dens)
+dev.off()
+
+png(file.path(outdir, "frec_diff_by_snp_barplot_r_gs.png"), width = 2400, height = 1200, res = 300)
+print(frec_bar)
+dev.off()
+
+# Save RDS and CSV
+saveRDS(prop_bar, file.path(outdir, "prop_diff_by_sample_barplot_r_gs.rds"))
+saveRDS(prop_dens, file.path(outdir, "prop_diff_by_sample_density_r_gs.rds"))
+saveRDS(frec_bar, file.path(outdir, "frec_diff_by_snp_barplot_r_gs.rds"))
+
+write.csv(prop_by_sample, file.path(outdir, "prop_diff_by_sample_r_gs.csv"),
+          quote = FALSE, row.names = FALSE)
+write.csv(frec_by_snp, file.path(outdir, "frec_diff_by_snp_r_gs.csv"),
+          quote = FALSE, row.names = FALSE)
+write.csv(frec_by_n_variants, file.path(outdir, "frec_diff_by_n_variants_r_gs.csv"),
+          quote = FALSE, row.names = FALSE)
