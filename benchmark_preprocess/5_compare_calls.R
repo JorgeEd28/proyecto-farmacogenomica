@@ -28,11 +28,14 @@ calls_gs <- read.csv(file.path(datadir, "calls_genomestudio.csv"), as.is = TRUE)
 # Annotation file
 anno_df <- read.csv(file.path(outdir, "annotation_file.csv"), as.is = TRUE)
 
-# Check order of data ---------------------------------------------------------
+# Arrange order of data -------------------------------------------------------
 calls_crlmm_var <- data.frame(IlmnID = rownames(calls_crlmm), 
                               stringsAsFactors = FALSE)
 calls_crlmm_var <- calls_crlmm_var %>% 
   left_join(anno_df %>% select(IlmnID, Name))
+
+calls_gs <- calls_gs %>%
+  arrange(factor(Name, levels = calls_crlmm_var))
 
 calls_identical <- identical(calls_crlmm_var[["Name"]], calls_gs[["Name"]])
 if (!calls_identical) {stop("Las variantes no son idénticas, no se pueden comparar las llamadas")
