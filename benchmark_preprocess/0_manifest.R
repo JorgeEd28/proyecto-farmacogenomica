@@ -47,7 +47,7 @@ genes_by_snp_ensembl <- getBM(attributes = c("refsnp_id", "ensembl_gene_stable_i
                            filters = c("snp_filter"),
                            values = manifest_clean %>% filter(str_detect(Variant, "rs*")) %>% select(Variant),
                            mart = snp_db) %>%
-  filter(ensembl_gene_stable_id != "")
+  filter(ensembl_gene_stable_id != "") %>% filter(grepl("LRG",ensembl_gene_stable_id))
 genes_by_snp_hgnc <- getBM(attributes = c("ensembl_gene_id", "hgnc_symbol"),
                            filters = c("ensembl_gene_id"),
                            values = select(genes_by_snp_ensembl, ensembl_gene_stable_id),
@@ -75,13 +75,19 @@ genes_by_pos <- data.frame(Variant = filter_var[queryHits(var_overlaps), "Varian
 # Full merge
 
 genes_by_snp_pos <- rbind(genes_by_snp, genes_by_pos)
-
 anno_df <- left_join(manifest_clean, genes_by_snp_pos) %>% unique()
+
+# Add rs to Variant
+
+anno_df <- anno_df %>%
+  mutate(Variant = ifelse(!grepl("^rs[0-9]+", Variant), 
+                          paste("rs0067", gsub("[A-Z]+", "0", Chr), gsub("[A-Z]+", "0", MapInfo), sep = ""), 
+                          Variant))
 
 # Separate
 
-anno_df_es <- anno_df %>% filter(!is.na(Gene))
-anno_df_e <- anno_df %>% filter(!is.na(Ensembl), is.na(Gene))
+anno_df_es <- anno_df %>% filter(!Gene %in% c("", NA))
+anno_df_e <- anno_df %>% filter(!is.na(Ensembl), Gene %in% c("", NA))
 anno_df_emp <- anno_df %>% filter(is.na(Ensembl))
 
 # Save annotation file
