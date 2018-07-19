@@ -1,7 +1,8 @@
 function(input, output) {
   # Display data
   zz <- gzfile("annotation_file.csv.gz", "rt")
-  data <- read.csv(zz, as.is = TRUE)
+  data <- read.csv(zz, colClasses = c("character", "character", "factor", 
+                                      "integer", "character", "character"))
   output$annotation <- DT::renderDataTable(DT::datatable(
     data,
     colnames = c(
@@ -13,7 +14,8 @@ function(input, output) {
       "Ensembl ID",
       "Gene symbol"
     ),
-    filter = 'top'
+    filter = 'top',
+    options = list(search = list(regex = TRUE, caseInsensitive = FALSE))
   ))
   
   # Save filter data
