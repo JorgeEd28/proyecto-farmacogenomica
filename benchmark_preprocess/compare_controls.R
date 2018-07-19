@@ -16,9 +16,9 @@ out.dir <- "R_Benchmark"
 # Load files ------------------------------------------------------------------
 
 # Load the PED and MAP files
-map <- read.table(file.path(pedmap.dir, "Benchmark.map"), sep = "\t",
+map <- read.table(file.path(pedmap.dir, "Benchmark", "PLINK_030718_0158", "Benchmark.map"), sep = "\t",
                   colClasses = "character")
-ped <- read.table(file.path(pedmap.dir, "Benchmark.ped"), sep = "\t",
+ped <- read.table(file.path(pedmap.dir, "Benchmark", "PLINK_030718_0158", "Benchmark.ped"), sep = "\t",
                   colClasses = "character")
 
 # Load the samplesheet
