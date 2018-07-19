@@ -1,7 +1,7 @@
 \documentclass{scrartcl}
 \usepackage[utf8]{inputenc}
 \usepackage[english,main=spanish]{babel}
-\usepackage{authblk,amssymb,amsthm,amsmath,lipsum}
+\usepackage{authblk,amssymb,amsthm,amsmath,lipsum,float}
 \usepackage{fancyhdr}
 \usepackage[letterpaper, margin=3cm]{geometry}
 \renewcommand{\figurename}{Figura}
@@ -52,7 +52,6 @@ norm_red_statistics <- read.csv(file.path(dir, "norm_red_statistics.csv"), as.is
 norm_green_statistics <- read.csv(file.path(dir, "norm_green_statistics.csv"), as.is = TRUE)
 @
 
-
 \section*{Análisis y genotipificación en GenomeStudio}
 
 El análisis y la genotipificación en GenomeStudio se llevó a cabo usando los archivos IDAT de un conjunto de 51 muestras seleccionadas por el grupo de la Dra. Mirelle Vanessa y cuya información se encuentra en un archivo CSV con el formato del \textit{samplesheet} requerido por GenomeStudio. La selección de los archivos pertinentes a partir de los datos crudos entregados por la empresa Codigo 46 se hizo mediante un \textit{script} de Bash y que puede ser adaptado posteriormente para la selección de cualquier otro subconjunto de muestras y su posterior análisis en GenomeStudio.
@@ -73,13 +72,13 @@ Para la la normalización, análisis y genotipificación en \texttt{R}, se utili
 
 En primer lugar, se hizo un análisis exploratorio de los valores de intensidad lumínica de ambos canales de cada microarreglo muestra, para identificar efectos de lote y muestras con comportamientos aberrantes. Los lotes se diferenciaron por días de corrida de los microarreglos.
 
-En las figuras \ref{fig:raw_red_boxplot} y \ref{fig:raw_green_boxplot} se muestran los \textit{boxplot} de los valores de intensidad lumínica (transformados a $log_2$ para facilitar la visualización), de los canales rojo y verde, respectivamente.
+En las figuras \ref{fig:raw_red_boxplot} y \ref{fig:raw_green_boxplot} se muestran los \textit{boxplot} de los valores de intensidad lumínica (transformados a $\log_2$ para facilitar la visualización), de los canales rojo y verde, respectivamente.
 
-<<raw_red_boxplot, echo=FALSE, dev='tikz', fig.height = 4, fig.cap = "Boxplot por muestra de logaritmo de la intensidad lumínica del canal rojo">>=
+<<raw_red_boxplot, echo=FALSE, dev='tikz', fig.pos='H', fig.height = 4, fig.cap = "Boxplot por muestra de logaritmo de la intensidad lumínica del canal rojo">>=
 raw_red_boxplot
 @
 
-<<raw_green_boxplot, echo=FALSE, dev='tikz', fig.height = 4, fig.cap = "Boxplot de logaritmo de la intensidad lumínica del canal verde por muestra">>=
+<<raw_green_boxplot, echo=FALSE, dev='tikz', fig.pos='H', fig.height = 4, fig.cap = "Boxplot de logaritmo de la intensidad lumínica del canal verde por muestra">>=
 raw_green_boxplot
 @
 
