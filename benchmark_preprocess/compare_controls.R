@@ -22,24 +22,21 @@ ped <- read.table(file.path(pedmap.dir, "Benchmark_C46.ped"), sep = "\t",
                   colClasses = "character")
 
 # Load the samplesheet
-samp <- read.table(file.path(samp.dir, "benchmark_samplesheet.csv"), 
-                   sep = ",", colClasses = "character")
+samp <- read.csv(file.path(samp.dir, "benchmark_samplesheet.csv"), 
+                 skip = 6, as.is = TRUE)
 
 # Extract replicates only ----------------------------------------------------
 
-# Get only samples data
-samp.d <- samp[8:nrow(samp), ]
-colnames(samp.d) <- samp[7, ]
-
 # Get replication samples
-replicates <- samp.d[which(samp.d$Replicates != ""), c("Sample_ID", "Replicates")]
+replicates <- samp %>% filter(Replicates != "") %>% 
+  select(Sample_ID, Replicates)
 
 # Compare sample lines -------------------------------------------------------
 
 # Transpose data frames
-ped.t <- as.data.frame(t(ped), stringsAsFactors = FALSE)
+ped_t <- as.data.frame(t(ped), stringsAsFactors = FALSE)
 colnames(ped_t) <- ped_t[2, ]
-ped.t <- ped_t[-c(1:6), ]
+ped_t <- ped_t[-c(1:6), ]
 
 # Compare genotype calls between samples and its replicates
 diff.allele <- apply(replicates, 1, 
