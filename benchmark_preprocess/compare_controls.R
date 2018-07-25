@@ -28,8 +28,9 @@ samp <- read.csv(file.path(samp.dir, "benchmark_samplesheet.csv"),
 # Extract replicates only ----------------------------------------------------
 
 # Get replication samples
-replicates <- samp %>% filter(Replicates != "") %>% 
-  select(Sample_ID, Replicates)
+replicates <- samp %>% filter(Replicates != "")
+rownames(replicates) <- replicates[["Sample_ID"]]
+replicates <- select(replicates, Replicates)
 
 # Compare sample lines -------------------------------------------------------
 
@@ -39,9 +40,10 @@ colnames(ped_t) <- ped_t[2, ]
 ped_t <- ped_t[-c(1:6), ]
 
 # Compare genotype calls between samples and its replicates
-diff.allele <- apply(replicates, 1, 
-                     function(x) ifelse(ped.t[x[1]] == ped.t[x[2]], 0, 1))
-colnames(diff.allele) <- replicates$Sample_ID
+diff.allele <- data.frame(row.names = 1:nrow(ped_t))
+for(i in rownames(replicates)){
+  diff.allele[[i]] <- ifelse(ped_t[[i]] == ped_t[[replicates[i,]]], 0, 1)
+}
 
 # Analysis by sample ----------------------------------------------------------
 
@@ -71,8 +73,8 @@ feq.by.n.variants <- freq.by.snp %>% group_by(frecuencia) %>%
   summarize(n.variantes = n()) %>% ungroup() %>% arrange(desc(frecuencia))
 
 # Get samples with shared genotypes between sample and replicate for each SNP
-shared.snp.samps <- apply(diff.snp.annotated[-1], 1, function(x) which(x == 0))
-names(shared.snp.samps) <- diff.snp.annotated$variante
+#shared.snp.samps <- apply(diff.snp.annotated[-1], 1, function(x) which(x == 0))
+#names(shared.snp.samps) <- diff.snp.annotated$variante
 
 # Plots -----------------------------------------------------------------------
 
@@ -83,13 +85,13 @@ prop.bar <- ggplot(prop.by.sample, aes(x = reorder(muestra, -proporcion), y = pr
   labs(x = "Microarreglo", y = "Proporción")
 
 # Density plot by sample
-prop.dens <- ggplot(prop.by.sample, aes(proporcion, color = "blue", fill = "blue")) +
+prop.dens <- ggplot(prop.by.sample, aes(x = proporcion, y = ..scaled.., color = "blue", fill = "blue")) +
   geom_density(alpha = 0.5, show.legend = F) + 
   theme(axis.text.x = element_text(angle = 90)) +
   labs(x = "Proporción", y = "Densidad")
 
 # Bar plot by variant (top 10)
-freq.bar <- ggplot(freq.by.snp[1:20], aes(x = reorder(variante, -frecuencia), y = frecuencia, fill = frecuencia)) +
+freq.bar <- ggplot(freq.by.snp[1:20,], aes(x = reorder(variante, -frecuencia), y = frecuencia, fill = frecuencia)) +
   geom_bar(stat = "identity", show.legend = F) + theme_minimal() +
   theme(axis.text.x = element_text(angle = 90)) +
   labs(x = "Proporción", y = "Densidad")
