@@ -37,7 +37,7 @@ La validación contó con los siguientes pasos:
 library(ggplot2)
 library(tikzDevice) # Pretty plots with LaTeX
 
-dir <- "R_Benchmark"
+dir <- "~/R_Benchmark"
 
 # Graphs
 raw_red_boxplot <- readRDS(file.path(dir, "raw_red_boxplot.rds"))

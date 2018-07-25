@@ -91,10 +91,13 @@ frec_bar <- ggplot(frec_by_snp[1:20,], aes(x = reorder(variante, -frecuencia), y
   labs(x = "Variante", y = "Frecuencia")
 
 # UpSet plot of shared variants between both PEDs in all samples
-isec.plot <- upset(fromList(shared_snp_samps), order.by = "freq", nsets = 10, 
-                   mainbar.y.label = "Samples per intersection", 
-                   sets.x.label = "Samples per variant", 
-                   main.bar.color = "dodgerblue", sets.bar.color = "violetred3")
+# Plot needs to be saved right away, UpSet doesn't support assigning the plot to a variable
+png(file.path(outdir, "isec_plot.png"), width = 2400, height = 1200, res = 300)
+upset(fromList(shared_snp_samps), order.by = "freq", nsets = 10, 
+      mainbar.y.label = "Samples per intersection", 
+      sets.x.label = "Samples per variant", 
+      main.bar.color = "dodgerblue", sets.bar.color = "violetred3")
+dev.off()
 
 # Save RDS --------------------------------------------------------------------
 
@@ -111,15 +114,10 @@ png(file.path(outdir, "frec_diff_by_snp_barplot.png"), width = 2400, height = 12
 print(frec_bar)
 dev.off()
 
-png(file.path(outdir, "isec_plot.png"), width = 2400, height = 1200, res = 300)
-print(isec.plot)
-dev.off()
-
 # Save RDS and CSV
 saveRDS(prop_bar, file.path(outdir, "prop_diff_by_sample_barplot.rds"))
 saveRDS(prop_dens, file.path(outdir, "prop_diff_by_sample_density.rds"))
 saveRDS(frec_bar, file.path(outdir, "frec_diff_by_snp_barplot.rds"))
-saveRDS(isec.plot, file.path(outdir, "isec_plot.rds"))
 
 write.csv(prop_by_sample, file.path(outdir, "prop_diff_by_sample.csv"),
           quote = FALSE, row.names = FALSE)
