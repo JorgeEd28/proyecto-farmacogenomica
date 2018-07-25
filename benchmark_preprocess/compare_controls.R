@@ -98,7 +98,7 @@ freq.bar <- ggplot(freq.by.snp[1:20,], aes(x = reorder(variante, -frecuencia), y
 
 # UpSet plot of shared variants between sample and replicate
 # Plot needs to be saved right away, UpSet doesn't support assigning the plot to a variable
-png(file.path(outdir, "replicates_shared_snp_isec_plot.png"), width = 2400, height = 1200, res = 300)
+png(file.path(out.dir, "replicates_shared_snp_isec_plot.png"), width = 2400, height = 1200, res = 300)
 upset(fromList(shared.snp.samps), order.by = "freq", nsets = 10,
                    mainbar.y.label = "Samples per intersection",
                    sets.x.label = "Samples per variant",
@@ -112,22 +112,22 @@ png(file.path(out.dir, "replicates_prop_diff_by_sample_barplot.png"), width = 24
 print(prop.bar)
 dev.off()
 
-png(file.path(outdir, "replicates_prop_diff_by_sample_density.png"), width = 2400, height = 1200, res = 300)
+png(file.path(out.dir, "replicates_prop_diff_by_sample_density.png"), width = 2400, height = 1200, res = 300)
 print(prop.dens)
 dev.off()
 
-png(file.path(outdir, "replicates_freq_diff_by_snp_barplot.png"), width = 2400, height = 1200, res = 300)
+png(file.path(out.dir, "replicates_freq_diff_by_snp_barplot.png"), width = 2400, height = 1200, res = 300)
 print(freq.bar)
 dev.off()
 
 # Save RDS and CSV
-saveRDS(prop.bar, file.path(outdir, "replicates_prop_diff_by_sample_barplot.rds"))
-saveRDS(prop.dens, file.path(outdir, "replicates_prop_diff_by_sample_density.rds"))
-saveRDS(freq.bar, file.path(outdir, "replicates_freq_diff_by_snp_barplot.rds"))
+saveRDS(prop.bar, file.path(out.dir, "replicates_prop_diff_by_sample_barplot.rds"))
+saveRDS(prop.dens, file.path(out.dir, "replicates_prop_diff_by_sample_density.rds"))
+saveRDS(freq.bar, file.path(out.dir, "replicates_freq_diff_by_snp_barplot.rds"))
 
-write.csv(prop.by.sample, file.path(outdir, "replicates_prop_diff_by_sample.csv"),
+write.csv(prop.by.sample, file.path(out.dir, "replicates_prop_diff_by_sample.csv"),
           quote = FALSE, row.names = FALSE)
-write.csv(frec.by.snp, file.path(outdir, "replicates_freq_diff_by_snp.csv"),
+write.csv(frec.by.snp, file.path(out.dir, "replicates_freq_diff_by_snp.csv"),
           quote = FALSE, row.names = FALSE)
-write.csv(frec.by.n.variants, file.path(outdir, "replicates_frec_diff_by_n_variants.csv"),
+write.csv(frec.by.n.variants, file.path(out.dir, "replicates_frec_diff_by_n_variants.csv"),
           quote = FALSE, row.names = FALSE)
