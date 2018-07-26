@@ -73,8 +73,8 @@ feq.by.n.variants <- freq.by.snp %>% group_by(frecuencia) %>%
   summarize(n.variantes = n()) %>% ungroup() %>% arrange(desc(frecuencia))
 
 # Get samples with shared genotypes between sample and replicate for each SNP
-#shared.snp.samps <- apply(diff.snp.annotated[-1], 1, function(x) which(x == 0))
-#names(shared.snp.samps) <- diff.snp.annotated$variante
+shared.snp.samps <- apply(diff.snp.annotated[-1], 1, function(x) which(x == 0))
+names(shared.snp.samps) <- diff.snp.annotated$variante
 
 # Plots -----------------------------------------------------------------------
 
