@@ -46,7 +46,7 @@ function(input, output) {
   # Upload filter data --------------------------------------------------------
   
   # Output table
-  output$contents <- renderTable({
+  output$anno_filter <- renderTable({
     
     # Ensure that values are available
     req(input$filter)
@@ -84,13 +84,35 @@ function(input, output) {
     return(paste("Following", input$filter_type, 
                 "IDs were not found in annotation dataset:",
                 paste(not_found, collapse = ', ')))
+  })
+  
+  # Filter PED ----------------------------------------------------------------
+  
+  # Read MAP
+  output$contents <- renderTable({
     
-    # return(paste("Following", input$filter_type,
-    #              "IDs were not found in annotation dataset:",
-    #              not_found))
+    # Ensure that values are available
+    req(v$anno_probes, input$map$datapath)
+    
+    # Read lines of file
+    tryCatch(
+      {
+        probes <- read.table(input$map$datapath, sep = "\t", as.is = TRUE)
+      },
+      error = function(e) {
+        # return a safeError if a parsing error occurs
+        stop(safeError(e))
+      }
+    )
+    # Count initial rows
+    nrows_i <- nrow(probes)
+    
+    # Filter
+    new_map <- probes %>% 
+      left_join(v$anno_probes %>% select(Name, Variant, Ensembl, Gene),
+                by = c("V2" = "Name")) #%>%
+      #filter(Variant != "")
+    
+    return(new_map)
   })
 }
-
-# Read MAP
-# probes <- read.table(input$map$datapath, sep = "\t", 
-#                      colClasses = c("NULL", "character", "NULL", "NULL"))

@@ -38,20 +38,19 @@ navbarPage(
              
              mainPanel(
                h4(paste("Summary table of features")),
-               tableOutput("contents"),
+               tableOutput("anno_filter"),
                textOutput("not_found")
              )
            )
   ),
   
-  # Upload MAP ----------------------------------------------------------------
-  tabPanel("Select MAP"
-    
+  # Filter PED ----------------------------------------------------------------
+  tabPanel("Filter PED",
+           
+           # Input MAP
+           fileInput("map", "Choose a MAP File", multiple = FALSE, accept = ".map"),
+           # Input PED
+           fileInput("ped", "Choose a PED File", multiple = FALSE, accept = ".ped"),
+           tableOutput("contents")
   )
 )
-
-# Input MAP
-#fileInput("map", "Choose a MAP File", multiple = FALSE, accept = "tsv"),
-
-# Input MAP
-#fileInput("ped", "Choose a PED File", multiple = FALSE, accept = "tsv"),
