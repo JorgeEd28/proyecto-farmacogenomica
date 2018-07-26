@@ -69,7 +69,7 @@ freq.by.snp <- data.frame(variante = diff.snp.annotated[[1]],
   arrange(desc(frecuencia))
 
 # Get number of different alleles for each variant
-feq.by.n.variants <- freq.by.snp %>% group_by(frecuencia) %>%
+freq.by.n.variants <- freq.by.snp %>% group_by(frecuencia) %>%
   summarize(n.variantes = n()) %>% ungroup() %>% arrange(desc(frecuencia))
 
 # Get samples with shared genotypes between sample and replicate for each SNP
@@ -127,7 +127,7 @@ saveRDS(freq.bar, file.path(out.dir, "replicates_freq_diff_by_snp_barplot.rds"))
 
 write.csv(prop.by.sample, file.path(out.dir, "replicates_prop_diff_by_sample.csv"),
           quote = FALSE, row.names = FALSE)
-write.csv(frec.by.snp, file.path(out.dir, "replicates_freq_diff_by_snp.csv"),
+write.csv(freq.by.snp, file.path(out.dir, "replicates_freq_diff_by_snp.csv"),
           quote = FALSE, row.names = FALSE)
-write.csv(frec.by.n.variants, file.path(out.dir, "replicates_frec_diff_by_n_variants.csv"),
+write.csv(freq.by.n.variants, file.path(out.dir, "replicates_frec_diff_by_n_variants.csv"),
           quote = FALSE, row.names = FALSE)
