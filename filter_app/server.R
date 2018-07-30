@@ -124,9 +124,15 @@ function(input, output) {
       need(ncol(v$map) == 4, "MAP file must contain 4 columns. Try again.")
     )
     
+    anno_probes_unique <- v$anno_probes %>% 
+      group_by(IlmnID, Name, Chr, MapInfo, Variant) %>% 
+      summarize(Ensembl = paste(unique(Ensembl), collapse = ", "), 
+                Gene = paste(unique(Ensembl), collapse = ", ")) %>%
+      ungroup()
+    
     # Filter
     map_extended <- v$map %>% 
-      left_join(v$anno_probes, by = c("V2" = "Name"))
+      left_join(anno_probes_unique, by = c("V2" = "Name"))
     validate(
       need(nrow(map_extended) != 0,
            "MAP probes does not correspond with annotation data probes.")
