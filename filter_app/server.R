@@ -1,15 +1,17 @@
 library(dplyr)
+`%then%` <- shiny:::`%OR%`
 
 options(shiny.maxRequestSize=150*1024^2)
 
 function(input, output) {
   # Initialize reactive variables
-  v <- reactiveValues(filter_list = NULL, anno_probes = NULL)
+  v <- reactiveValues(filter_list = NULL, anno_probes = NULL, map = NULL,
+                      new_map = NULL, index = NULL, anno_new = NULL, ped = NULL)
   
   # Annotation data -----------------------------------------------------------
   
   # Display data
-  zz <- gzfile("annotation_file.csv.gz", "rt")
+  zz <- gzfile("www/annotation_file.csv.gz", "rt")
   anno <- read.csv(zz, colClasses = c("character", "character", "factor", 
                                       "integer", "character", "character"))
   output$annotation <- DT::renderDataTable(DT::datatable(
@@ -19,7 +21,7 @@ function(input, output) {
       "Probe-variant name",
       "Chromosome",
       "Position",
-      "Variant name",
+      "Variant ID",
       "Ensembl ID",
       "Gene symbol"
     ),
@@ -64,6 +66,10 @@ function(input, output) {
     
     # Activate comparison when click in button
     v$anno_probes <- anno %>% filter((!!sym(input$filter_type)) %in% v$filter_list)
+    validate(
+      need(nrow(v$anno_probes) != 0,
+           "No value of your filter list match with the annotation data.")
+    )
     
     # Return summary table
     summary_table <- v$anno_probes %>% select(Variant, Ensembl, Gene) %>%
@@ -71,48 +77,147 @@ function(input, output) {
       summarize(Ensembl = paste(unique(Ensembl), collapse = ", "), 
                 Variants = n_distinct(Variant)) %>%
       ungroup()
-    return(summary_table)
-  })
+    return(summary_table)},
+    striped = TRUE
+  )
   
   # Return not matching filters
   output$not_found <- renderText({ 
-    if(is.null(v$anno_probes)){
-      return("Upload a filter file to start")
-    }
+    validate(
+      need(!is.null(v$filter_list) & nrow(v$anno_probes) != 0,
+           "Upload a valid filter file to start.")
+    )
+    
     not_found <- setdiff(v$filter_list,
                          v$anno_probes[[input$filter_type]])
     return(paste("Following", input$filter_type, 
-                "IDs were not found in annotation dataset:",
-                paste(not_found, collapse = ', ')))
+                 "IDs were not found in annotation dataset:",
+                 paste(not_found, collapse = ', ')))
   })
   
   # Filter PED ----------------------------------------------------------------
   
   # Read MAP
-  output$contents <- renderTable({
-    
+  observeEvent(input$goButton, {
+    v$map <- input$map$datapath
+    v$ped <- input$ped$datapath
+  })
+  
+  # Print MAP info
+  output$map_info <- renderText({
     # Ensure that values are available
-    req(v$anno_probes, input$map$datapath)
+    validate(
+      need(!is.null(v$map), "Upload a MAP file.") %then%
+        need(!is.null(v$filter_list) & nrow(v$anno_probes) != 0,
+             "Upload a valid filter file.")
+    )
     
-    # Read lines of file
     tryCatch(
       {
-        probes <- read.table(input$map$datapath, sep = "\t", as.is = TRUE)
+        v$map <- read.table(input$map$datapath, sep = "\t", as.is = TRUE)
       },
       error = function(e) {
-        # return a safeError if a parsing error occurs
         stop(safeError(e))
       }
     )
-    # Count initial rows
-    nrows_i <- nrow(probes)
+    validate(
+      need(ncol(v$map) == 4, "MAP file must contain 4 columns. Try again.")
+    )
     
     # Filter
-    new_map <- probes %>% 
-      left_join(v$anno_probes %>% select(Name, Variant, Ensembl, Gene),
-                by = c("V2" = "Name")) #%>%
-      #filter(Variant != "")
+    map_extended <- v$map %>% 
+      left_join(v$anno_probes, by = c("V2" = "Name"))
+    validate(
+      need(nrow(map_extended) != 0,
+           "MAP probes does not correspond with annotation data probes.")
+    )
     
-    return(new_map)
+    # Generate new map
+    v$new_map <- map_extended %>%
+      transmute(V1 = V1, V2 = Variant, V3 = V3, V4 = V4) %>%
+      filter(!is.na(V2))
+    
+    # Get index of filter variants
+    v$index <- which(!is.na(map_extended[["Variant"]]))
+    
+    # New annotation
+    v$anno_new <- map_extended %>% 
+      select(-V1, -V2, -V3, -V4) %>%
+      filter(!is.na(Variant))
+    
+    paste("Original MAP file had", nrow(v$map), 
+          "variants. New MAP file has", nrow(v$new_map), "variants.")
   })
+  
+  # Read PED
+  output$ped_info <- renderText({
+    # Ensure that values are available
+    validate(
+      need(!is.null(v$ped), "Upload a PED file.") %then%
+        need(!is.null(v$index), "Upload valid MAP and filter files.")
+    )
+    
+    # Define class matrix
+    col <- rep("NULL", nrow(v$map)*2)
+    col[v$index*2] <- "character"
+    col[v$index*2 - 1] <- "character"
+    col <- c(rep("character", 6), col)
+    
+    tryCatch(
+      {
+        v$ped <- read.table(input$ped$datapath, sep = "\t",
+                            colClasses = col)
+      },
+      error = function(e) {
+        stop(safeError(e))
+      }
+    )
+    
+    paste("PED file was successfully filtered.
+          PED file has", nrow(v$ped), "samples:")
+  })
+  
+  # Print PED table
+  output$ped_table <- renderTable({
+    req(is.data.frame(v$ped))
+    sum_ped <- v$ped %>%
+      transmute("Family ID" = V1, "Sample ID" = V2, "Paternal ID" = V3,
+                "Maternal ID" = V4, "Sex" = V5, "Affection" = V6)
+    return(sum_ped)}, 
+    striped = TRUE
+  )
+  
+  # Download files ----------------------------------------------------------------
+  
+  # New MAP
+  output$download_map <-
+    downloadHandler(
+      filename = input$map$name,
+      content = function(file) {
+        write.table(v$new_map, file, sep = "\t", col.names = FALSE, 
+                    row.names = FALSE, quote = FALSE)
+      }
+    )
+  
+  # New Annotation
+  output$download_anno_new <-
+    downloadHandler(
+      filename = function() {
+        paste("annotation_file_", tools::file_path_sans_ext(input$map$name), 
+              ".csv", sep = "")
+      },
+      content = function(file) {
+        write.csv(v$anno_new, file, row.names = FALSE, quote = FALSE, na = "")
+      }
+    )
+  
+  # New PED
+  output$download_ped <-
+    downloadHandler(
+      filename = input$ped$name,
+      content = function(file) {
+        write.table(v$ped, file, sep = "\t", col.names = FALSE, 
+                    row.names = FALSE, quote = FALSE)
+      }
+    )
 }
