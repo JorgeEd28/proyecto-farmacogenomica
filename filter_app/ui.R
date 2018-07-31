@@ -1,7 +1,7 @@
 library(shinythemes)
 library(markdown)
 
-navbarPage(theme = shinytheme("flatly"),
+shinyUI(navbarPage(theme = shinytheme("flatly"),
            "FiltPEDs Tool",
            
            # Main page -----------------------------------------------------------------
@@ -96,4 +96,4 @@ navbarPage(theme = shinytheme("flatly"),
                     downloadButton(outputId = "download_ped",
                                    label = "Download new PED")
            )
-)
+))

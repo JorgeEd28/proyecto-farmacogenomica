@@ -1,9 +1,10 @@
 library(dplyr)
+library(shiny)
 `%then%` <- shiny:::`%OR%`
 
 options(shiny.maxRequestSize=150*1024^2)
 
-function(input, output) {
+shinyServer(function(input, output) {
   # Initialize reactive variables
   v <- reactiveValues(filter_list = NULL, anno_probes = NULL, map = NULL,
                       new_map = NULL, index = NULL, anno_new = NULL, ped = NULL)
@@ -226,4 +227,4 @@ function(input, output) {
                     row.names = FALSE, quote = FALSE)
       }
     )
-}
+})
