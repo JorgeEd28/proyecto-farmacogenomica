@@ -84,7 +84,7 @@ prop_dens <- ggplot(prop_by_sample, aes(x = proporcion, y = ..scaled.., color = 
   theme(axis.text.x = element_text(angle = 90)) +
   labs(x = "Proporción", y = "Densidad")
 
-# Bar plot by variant (top 10)
+# Bar plot by variant (top 20)
 frec_bar <- ggplot(frec_by_snp[1:20,], aes(x = reorder(variante, -frecuencia), y = frecuencia, fill = frecuencia)) +
   geom_bar(stat = "identity", show.legend=F) + theme_minimal() + 
   theme(axis.text.x = element_text(angle = 90)) +
