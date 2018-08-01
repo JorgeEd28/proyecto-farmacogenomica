@@ -1,5 +1,6 @@
 library(dplyr)
 library(shiny)
+
 `%then%` <- shiny:::`%OR%`
 
 options(shiny.maxRequestSize=150*1024^2, shiny.sanitize.errors = TRUE)
@@ -15,6 +16,7 @@ shinyServer(function(input, output) {
   zz <- gzfile("www/annotation_file.csv.gz", "rt")
   anno <- read.csv(zz, colClasses = c("character", "character", "factor", 
                                       "integer", "character", "character"))
+  
   output$annotation <- DT::renderDataTable(DT::datatable(
     anno,
     colnames = c(
@@ -29,6 +31,9 @@ shinyServer(function(input, output) {
     filter = 'top',
     options = list(search = list(regex = TRUE, caseInsensitive = FALSE))
   ))
+  
+  # Hide the loading message when the rest of the server function has executed
+  hide(id = "loading-content", anim = TRUE, animType = "fade")
   
   # Save filter data
   output$filtered_row <-
@@ -128,7 +133,7 @@ shinyServer(function(input, output) {
     anno_probes_unique <- v$anno_probes %>% 
       group_by(IlmnID, Name, Chr, MapInfo, Variant) %>% 
       summarize(Ensembl = paste(unique(Ensembl), collapse = ", "), 
-                Gene = paste(unique(Ensembl), collapse = ", ")) %>%
+                Gene = paste(unique(Gene), collapse = ", ")) %>%
       ungroup()
     
     # Filter
@@ -163,17 +168,24 @@ shinyServer(function(input, output) {
       need(!is.null(v$ped), "Upload a PED file.") %then%
         need(!is.null(v$index), "Upload valid MAP and filter files.")
     )
+    # Ensure that number of columns coincide with MAP
+    n_col <- count.fields(input$ped$datapath, sep = "\t")
+    validate(
+      need(min(n_col) == max(n_col),
+           "Your PED file has different number of rows per sample.") %then%
+        need(6 + (nrow(v$map)*2) == min(n_col),
+             "Your PED file and your MAP file does not coincide in number of features.")
+    )
     
-    # Define class matrix
-    col <- rep("NULL", nrow(v$map)*2)
-    col[v$index*2] <- "character"
-    col[v$index*2 - 1] <- "character"
-    col <- c(rep("character", 6), col)
+    # Define columns to read
+    col <- sort(c(v$index*2 - 1, v$index*2) + 6)
+    col <- c(1:6, col)
     
     tryCatch(
       {
-        v$ped <- read.table(input$ped$datapath, sep = "\t",
-                            colClasses = col)
+        v$ped <- data.table::fread(input$ped$datapath, sep = "\t", 
+                                   select = col, colClasses = "character",
+                                   verbose = TRUE, data.table = FALSE)
       },
       error = function(e) {
         stop(safeError(e))

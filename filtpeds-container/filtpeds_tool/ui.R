@@ -1,5 +1,20 @@
 library(shinythemes)
 library(markdown)
+library(shinyjs)
+
+appCSS <- "
+#loading-content {
+position: absolute;
+background: #000000;
+opacity: 0.9;
+z-index: 100;
+left: 0;
+right: 0;
+height: 100%;
+text-align: center;
+color: #FFFFFF;
+}
+"
 
 shinyUI(navbarPage(theme = shinytheme("flatly"),
            "FiltPEDs Tool",
@@ -17,6 +32,11 @@ shinyUI(navbarPage(theme = shinytheme("flatly"),
            
            # View and filter annotation ------------------------------------------------
            tabPanel("Annotation",
+                    
+                    useShinyjs(),
+                    inlineCSS(appCSS),
+                    div(id = "loading-content", h2("Loading..."), 
+                      img(src = "loader-bar.gif")),
                     
                     # Display name
                     titlePanel("Annotation dataset"),
