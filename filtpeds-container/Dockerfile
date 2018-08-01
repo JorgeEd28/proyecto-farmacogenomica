@@ -25,7 +25,7 @@ RUN wget --no-verbose https://s3.amazonaws.com/rstudio-shiny-server-os-build/ubu
     gdebi -n ss-latest.deb && \
     rm -f version.txt ss-latest.deb
 
-RUN R -e "install.packages(c('Rcpp', 'shiny', 'DT', 'rmarkdown', 'dplyr', 'shinythemes'), repos='https://cran.rstudio.com/')"
+RUN R -e "install.packages(c('Rcpp', 'shiny', 'DT', 'data.table', 'rmarkdown', 'dplyr', 'shinythemes', 'shinyjs'), repos='https://cran.rstudio.com/')"
 
 COPY shiny-server.sh /usr/bin/shiny-server.sh
 ## Include a custom configuration file. You can download the default file at
