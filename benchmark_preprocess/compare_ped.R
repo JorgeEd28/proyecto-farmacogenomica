@@ -91,7 +91,8 @@ frec_bar <- ggplot(frec_by_snp[1:20,], aes(x = reorder(variante, -frecuencia), y
   labs(x = "Variante", y = "Frecuencia")
 
 # Bar plot for frequency with most variants (top 20)
-var_frec <- ggplot(frec_by_n_variants, aes(x = frecuencia, y = n_variantes, fill = n_variantes)) + 
+var_frec <- ggplot(frec_by_n_variants[-nrow(frec_by_n_variants),], 
+                   aes(x = frecuencia, y = n_variantes, fill = n_variantes)) + 
   geom_bar(stat = "identity", show.legend=F) + theme_minimal() + 
   theme(axis.text.x = element_text(angle = 90)) + 
   labs(x = "Frecuencia", y = "Número de variantes")
