@@ -66,9 +66,6 @@ frec_by_snp <- data.frame(variante = diff_snp_annotated[[1]],
 frec_by_n_variants <- frec_by_snp %>% group_by(frecuencia) %>% 
   summarize(n_variantes = n()) %>% ungroup() %>% arrange(desc(frecuencia))
 
-# Arrange the number of different variants by frequency using n_variants
-n_variants_by_frec <- frec_by_n_variants %>% arrange(desc(n_variantes))
-
 # Get the samples with shared genotypes between PEDs for each SNP
 shared_snp_samps <- apply(diff_snp_annotated[-1], 1, function(x) which(x == 0))
 names(shared_snp_samps) <- diff_snp_annotated$variante
@@ -94,10 +91,10 @@ frec_bar <- ggplot(frec_by_snp[1:20,], aes(x = reorder(variante, -frecuencia), y
   labs(x = "Variante", y = "Frecuencia")
 
 # Bar plot for frequency with most variants (top 20)
-var_frec <- ggplot(frec[1:20,], aes(x = reorder(frecuencia, -n_variantes), y = n_variantes, fill = n_variantes)) + 
-  geom_bar(stat = "identity", show.legend = F) + theme_minimal() + 
+var_frec <- ggplot(frec_by_n_variants, aes(x = frecuencia, y = n_variantes, fill = n_variantes)) + 
+  geom_bar(stat = "identity", show.legend=F) + theme_minimal() + 
   theme(axis.text.x = element_text(angle = 90)) + 
-  labs(x = "Muestras", y = "Número de variantes")
+  labs(x = "Frecuencia", y = "Número de variantes")
 
 # UpSet plot of shared variants between both PEDs in all samples
 # Plot needs to be saved right away, UpSet doesn't support assigning the plot to a variable
@@ -123,7 +120,7 @@ png(file.path(outdir, "frec_diff_by_snp_barplot.png"), width = 2400, height = 12
 print(frec_bar)
 dev.off()
 
-png(file.path(outdir, "prop_diff_by_n_variants.png"), width = 2400, height = 1200, res = 300)
+png(file.path(outdir, "frec_diff_by_n_variants_barplot.png"), width = 2400, height = 1200, res = 300)
 print(var_frec)
 dev.off()
 
@@ -131,7 +128,7 @@ dev.off()
 saveRDS(prop_bar, file.path(outdir, "prop_diff_by_sample_barplot.rds"))
 saveRDS(prop_dens, file.path(outdir, "prop_diff_by_sample_density.rds"))
 saveRDS(frec_bar, file.path(outdir, "frec_diff_by_snp_barplot.rds"))
-saveRDS(var_frec, file.path(outdir, "prop_diff_by_n_variants.rds"))
+saveRDS(var_frec, file.path(outdir, "frec_diff_by_n_variants_barplot.rds"))
 
 write.csv(prop_by_sample, file.path(outdir, "prop_diff_by_sample.csv"),
           quote = FALSE, row.names = FALSE)
