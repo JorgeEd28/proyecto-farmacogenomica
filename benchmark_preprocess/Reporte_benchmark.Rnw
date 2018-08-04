@@ -62,7 +62,7 @@ reps_prop_diff_by_sample_density <- readRDS(file.path(dir, "replicates_prop_diff
 reps_freq_diff_by_snp_barplot <- readRDS(file.path(dir, "replicates_freq_diff_by_snp_barplot.rds"))
 
 # Barplot of difference frequencies by n variants
-prop_diff_by_n_variants <- readRDS(file.path(dir, "prop_diff_by_n_variants.rds"))
+frec_diff_by_n_variants_barplot <- readRDS(file.path(dir, "frec_diff_by_n_variants_barplot.rds"))
 @
 
 \section*{Análisis y genotipificación en GenomeStudio}
