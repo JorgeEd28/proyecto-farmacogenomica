@@ -31,24 +31,38 @@ La validación contó con los siguientes pasos:
   \item \textit{Benchmark} de archivos PED y MAP generados con \texttt{R}, con archivos PED y MAP originales
 \end{enumerate}
 
-% Load RDS and requiered packages
+% Load RDS and required packages
+
 <<load, echo = FALSE, results= "hide", warning = FALSE, message = FALSE>>=
 library(ggplot2)
 library(tikzDevice) # Pretty plots with LaTeX
 
 dir <- "R_Benchmark"
 
-# Graphs
+# Intensity graphs
 raw_red_boxplot <- readRDS(file.path(dir, "raw_red_boxplot.rds"))
 raw_green_boxplot <- readRDS(file.path(dir, "raw_green_boxplot.rds"))
 norm_red_boxplot <- readRDS(file.path(dir, "norm_red_boxplot.rds"))
 norm_green_boxplot <- readRDS(file.path(dir, "norm_green_boxplot.rds"))
 
-# Tables
+# Intensity tables
 raw_red_statistics <- read.csv(file.path(dir, "raw_red_statistics.csv"), as.is = TRUE)
 raw_green_statistics <- read.csv(file.path(dir, "raw_green_statistics.csv"), as.is = TRUE)
 norm_red_statistics <- read.csv(file.path(dir, "norm_red_statistics.csv"), as.is = TRUE)
 norm_green_statistics <- read.csv(file.path(dir, "norm_green_statistics.csv"), as.is = TRUE)
+
+# PEDs benchmark plots
+prop_diff_by_sample_barplot <- readRDS(file.path(dir, "prop_diff_by_sample_barplot.rds"))
+prop_diff_by_sample_density <- readRDS(file.path(dir, "prop_diff_by_sample_density.rds"))
+fec_diff_by_snp_barplot <- readRDS(file.path(dir, "frec_diff_by_snp_barplot.rds"))
+
+# Replicates benchmark plots
+reps_prop_diff_by_sample_barplot <- readRDS(file.path(dir, "replicates_prop_diff_by_sample_barplot.rds"))
+reps_prop_diff_by_sample_density <- readRDS(file.path(dir, "replicates_prop_diff_by_sample_density.rds"))
+reps_freq_diff_by_snp_barplot <- readRDS(file.path(dir, "replicates_freq_diff_by_snp_barplot.rds"))
+
+# Barplot of difference frequencies by n variants
+frec_diff_by_n_variants_barplot <- readRDS(file.path(dir, "frec_diff_by_n_variants_barplot.rds"))
 @
 
 \section*{Análisis de IDAT crudos y genotipificación en GenomeStudio}
@@ -63,9 +77,53 @@ Para el análisis de variantes en número de copias (CNVs) se utilizó el \texti
 
 Para la comparación del genotipado obtenido en GenomeStudio y el entregado por la empresa Código 46 con la misma plataforma, se utilizaron los archivos MAP y PED de ambos análisis. Debido a que las muestras que comprenden el subconjunto para el \textit{Benchmark} pertenecen a lotes diferentes y el análisis por parte de Código 46 se hizo por separado, vimos la necesidad de generar de nuevo un \textit{script} de Bash. Este \textit{script} produce un archivo PED con las muestras del \textit{samplesheet} antes mencionado ocupando únicamente los archivos PED que fueron generados a partir de los mismos archivos IDAT. De la misma forma, este \textit{script} puede ser adaptado para generar un archivo PED de otro conjunto de muestras. Puesto que los archivos MAP son iguales, siempre y cuando correspondan al mismo microarreglo, utilizamos uno de lo MAP disponibles para hacer la comparación entre archivos PED.
 
+\subsection*{Comparación de archivos PED}
+
+Para determinar el grado de similitud entre los resultados de Código 46 y los nuestros, se hizo una comparación de cada uno de los genotipos de las muestras en el archivo PED generado con GenomeStudio y las muestras correspondientes en el archivo PED generado por Código 46.
+
+La proporción de diferencias entre los genotipos para cada una de las muestras es muy bajo. Se puede observar en la figura \ref{fig:prop_diff_by_sample_barplot} que la mayoría de las muestras difieren en menos del 2.5\% entre ambos archivos PED y las únicas excepciones son los genotipos correspondientes a las muestras PX0069 y 60 con una proporción de diferencia en ambos casos cercana al 15\%.
+
+<<prop_diff_by_sample_barplot, echo=FALSE, dev='tikz', fig.pos='H', fig.height = 4, fig.cap = "Gráfico de barras por muestra de las proporciones de diferencias de alelos entre ambos archivos PED">>=
+prop_diff_by_sample_barplot
+@
+
+La distribución de los valores de las proporciones que se muestra en la figura \ref{fig:prop_diff_by_sample_density} muestra que la mayor parte de los valores calculados se encuentran muy cercanos al 0\%.
+
+<<prop_diff_by_sample_density, echo=FALSE, dev='tikz', fig.pos='H', fig.height = 4, fig.cap = "Distribución de los valores de proporción de diferencias calculados para cada muestra">>=
+prop_diff_by_sample_density
+@
+
+Si bien la proporción de variantes que difieren entre las muestras es pequeña, un número considerable de variantes difieren para todas o la mayor parte de las muestras. En la figura \ref{fig:frec_diff_by_snp_barplot} se pueden observar 20 de las variantes que difieren para las 51 muestras al comparar los dos archivos PED.
+
+<<frec_diff_by_snp_barplot, echo=FALSE, dev='tikz', fig.pos='H', fig.height = 4, fig.cap = "Gráfico de barras con las 20 variantes con mayor número de diferencias entre las muestras">>=
+frec_diff_by_snp_barplot
+@
+
+\subsection*{Comparación de las muestras con sus réplicas}
+
+Una vez realizada la comparación entre archivos PED generados se observó que las diferencias entre los datos generados por Código 46 y mediante GenomeStudio no diferían en una proporción alta por lo que  se llevó a cabo una comparación de los genotipos entre las muestras y sus réplicas, en aquellos casos que era pertinente, usando los archivos PED generados por Código 46. Se identificaron únicamente 8 muestras con una o más réplicas y se realizó su comparación con las muestras de las cuales eran réplicas según el \textit{samplesheet}.
+
+Al igual que en la comparación entre archivos PED, se realizó una comparación de las proporciones de diferencias entre los genotipos de las muestras con sus réplicas. Las proporciones que se observan en la figura \ref{reps_prop_diff_by_sample_barplot} son de arriba del 10\% para la muestra 60 y por debajo del 5\% para las otras 7.
+
+<<reps_prop_diff_by_sample_barplot, echo=FALSE, dev='tikz', fig.pos='H', fig.height = 4, fig.cap = "Gráfico de barras para las 8 muestras con réplicas de las proporciones de diferencias de alelos">>=
+reps_prop_diff_by_sample_barplot
+@
+
+El gráfico de la distribución de densidad de los valores de proporción de diferencia que se muestra en la figure \ref{reps_prop_diff_by_sample_density} indican que la mayor parte de estos valores se encuentran cerca del 0\%. Sin embargo, como se determinó en la figura \ref{reps_prop_diff_by_sample_barplot}, hay valores arriba del 10\%, el cual corresponde a la misma muestra 60, y cercanos al 2.5\%.
+
+<<reps_prop_diff_by_sample_density, echo=FALSE, dev='tikz', fig.pos='H', fig.height = 4, fig.cap = "Distribución de los valores de proporción de diferencias entre las muestras y sus réplicas">>=
+reps_prop_diff_by_sample_density
+@
+
+Como en el caso de la comparación entre archivos PED, se genéro un gráfico de barras que se puede observar en la figura \ref{reps_freq_diff_by_snp_barplot} que muestra la frecuencia con la que difieren el top 20 de variantes diferentes entre las muestras y sus réplicas. Todas las variantes que se observan se difieren en al menos 6 de las 8 muestras. Sólo 3 de las 20 variantes difieren en 7 de las muestras y, finalmente, la variante rs13305028 difieren entre la muestra y su réplica en el 100\% de los casos.
+
+<<reps_freq_diff_by_snp_barplot, echo=FALSE, dev='tikz', fig.pos='H', fig.height = 4, fig.cap = "Gráfico de barras con el top 20 de variantes que más difieren entre las muestras y sus réplicas">>=
+reps_freq_diff_by_snp_barplot
+@
+
 \section*{Análisis y y genotipificación en \texttt{R}}
 
-Para la la normalización, análisis y genotipificación en \texttt{R}, se utilizó el paquete \texttt{crlmm}\cite{scharpf2011using}, a través de \texttt{Bioconductor}, diseñado con modelos multinivel para plataformas de microarreglos como Affymetrix e Illumina \cite{ritchie2009r}. Éste paquete es una implementación del algoritmo CRLMM para producir el llamado de genotipes, puntajes de confianza y métricas de calidad adicionales para las variantes y las muestras 
+Para la la normalización, análisis y genotipificación en \texttt{R}, se utilizó el paquete \texttt{crlmm}\cite{scharpf2011using}, a través de \texttt{Bioconductor}, diseñado con modelos multinivel para plataformas de microarreglos como Affymetrix e Illumina \cite{ritchie2009r}. Éste paquete es una implementación del algoritmo CRLMM para producir el llamado de genotipos, puntajes de confianza y métricas de calidad adicionales para las variantes y las muestras 
 
 \subsection*{Análisis exploratorio}
 
