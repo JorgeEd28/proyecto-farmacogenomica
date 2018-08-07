@@ -8,7 +8,7 @@ This is a Dockerfile for Shiny Server on Debian "testing". It is based on the r-
 ### Build
 
 ```sh
-docker docker build -t shiny-filtpeds .
+docker build -t shiny-filtpeds .
 ```
 
 You should have an image named `shiny-filtpeds` now. You can verify with:
