@@ -20,24 +20,23 @@
 
 \maketitle
 
-El siguiente documento reporta los resultados obtenidos de la validación de los archivos MAP y PED originales (entregados por la empresa Código 46), a partir de distintos análisis con los archivos de intensidad (IDAT) crudos, que contienen las cuantificación de señal asociada a las variantes del chip Infinium Global Screening Array-24 Kit de Illumina, y personalizado para el Instituto Nacional de Medicina Genómica. Dicho análisis se llevó a cabo utilizando herramientas de código abierto y licencia gratuita; entre éstas se encuentran \texttt{R}, los paquetes \texttt{Bioconductor}, \texttt{crlmm} y \texttt{ggplot2}, GenomeStudio Software© de Illumina, Inc., y \LaTeX para la generación de reportes.
+El siguiente documento reporta los resultados obtenidos de la validación de los archivos MAP y PED originales (entregados por la empresa Código 46), a partir de distintos análisis con los archivos de intensidad (IDAT) crudos, que contienen las cuantificaciones de señal asociadas a las variantes del chip Infinium Global Screening Array-24 Kit de Illumina, y personalizado para el Instituto Nacional de Medicina Genómica. Dicho análisis se llevó a cabo utilizando herramientas de código abierto y licencia gratuita; entre éstas se encuentran \texttt{R}, los paquetes \texttt{Bioconductor}, \texttt{crlmm} y \texttt{ggplot2}, GenomeStudio Software© de Illumina, Inc., y \LaTeX para la generación de reportes.
 
 La validación contó con los siguientes pasos:
 \begin{enumerate}
-  \item Análisis de IDAT crudos con GenomeStudio
+  \item Análisis de IDAT crudos en GenomeStudio
   \item Genotipificación y generación de archivos PED y MAP con GenomeStudio
   \item \textit{Benchmark} (comparación) de archivos PED y MAP generados con GenomeStudio, con archivos PED y MAP originales
   \item Análisis y genotipificación de IDAT crudos con paquetería de \texttt{R}
   \item \textit{Benchmark} de archivos PED y MAP generados con \texttt{R}, con archivos PED y MAP originales
 \end{enumerate}
 
-
 % Load RDS and requiered packages
 <<load, echo = FALSE, results= "hide", warning = FALSE, message = FALSE>>=
 library(ggplot2)
 library(tikzDevice) # Pretty plots with LaTeX
 
-dir <- "~/R_Benchmark"
+dir <- "R_Benchmark"
 
 # Graphs
 raw_red_boxplot <- readRDS(file.path(dir, "raw_red_boxplot.rds"))
@@ -52,17 +51,17 @@ norm_red_statistics <- read.csv(file.path(dir, "norm_red_statistics.csv"), as.is
 norm_green_statistics <- read.csv(file.path(dir, "norm_green_statistics.csv"), as.is = TRUE)
 @
 
-\section*{Análisis y genotipificación en GenomeStudio}
+\section*{Análisis de IDAT crudos y genotipificación en GenomeStudio}
 
-El análisis y la genotipificación en GenomeStudio se llevó a cabo usando los archivos IDAT de un conjunto de 51 muestras seleccionadas por el grupo de la Dra. Mirelle Vanessa y cuya información se encuentra en un archivo CSV con el formato del \textit{samplesheet} requerido por GenomeStudio. La selección de los archivos pertinentes a partir de los datos crudos entregados por la empresa Codigo 46 se hizo mediante un \textit{script} de Bash y que puede ser adaptado posteriormente para la selección de cualquier otro subconjunto de muestras y su posterior análisis en GenomeStudio.
+El análisis y la genotipificación en GenomeStudio se llevó a cabo usando los archivos IDAT de un conjunto de 51 muestras seleccionadas por el grupo de la Dra. Vanessa González Covarrubias, y cuya información se encuentra en un archivo CSV (1_benchmark_samplesheet.csv) con el formato del \textit{samplesheet} requerido por GenomeStudio. La selección de los archivos pertinentes a partir de los datos crudos entregados por la empresa Codigo 46 se hizo mediante un \textit{script} de \texttt{bash} y que puede ser adaptado posteriormente para la selección de cualquier otro subconjunto de muestras y su posterior análisis en GenomeStudio. %Será necesario hablar de este bash?
 
-El análisis en GenomeStudio se hizo con el módulo \textit{Genotyping}, usando el \textit{samplesheet} anteriormente descrito, el \textit{Manifest} correspondiente al microarreglo y los IDAT seleccionados. Una vez hecha la genotipificación, se hizo el \textit{clustering} de los SNPs seleccionando \textbf{Analysis | Cluster All SNPs} dentro de GenomeStudio usando un umbral de 0.15 para el llamado. Posteriormente la generación de los archivos PED y MAP se hizo empleando el \textit{plugin} de \textit{PLINK Input Report} versión 2.1.4 que se puede descargar de la página de Illumina.
+El análisis en GenomeStudio se hizo con el módulo \textit{Genotyping}, usando el \textit{samplesheet} anteriormente descrito, el \textit{Manifest} correspondiente al microarreglo (asimismo entregado por Código 46) y los IDAT seleccionados. Una vez hecha la genotipificación, se hizo el \textit{clustering} de los SNPs seleccionando \textbf{Analysis | Cluster All SNPs} dentro de GenomeStudio usando un umbral de 0.15 para el llamado de variantes. Posteriormente la generación de los archivos PED y MAP se hizo empleando el \textit{plugin} de \textit{PLINK Input Report} versión 2.1.4 que se puede descargar de la página de Illumina.
 
-Para el análisis de variantes en número de copias (CNVs) se utilizó el \textit{plugin cnvPartition CNV Analysis} versión 3.2.1 y se agregaron a la tabla de resultados las columnas de \textit{CNV Value} y \textit{CNV Confidence}. Esta tabla se exportó en formato CSV para su interpretación. 
+Para el análisis de variantes en número de copias (CNVs) se utilizó el \textit{plugin cnvPartition CNV Analysis} versión 3.2.1 y se agregaron a la tabla de resultados las columnas de \textit{CNV Value} y \textit{CNV Confidence}. Esta tabla se exportó en formato CSV para su interpretación. %Especificar CSV
 
 \section*{\textit{Benchmark} con archivos generados en GenomeStudio}
 
-Para la comparación del análisis que llevamos a cabo en GenomeStudio y el realizado por la empresa Código 46 con la misma plataforma, utilizamos los archivos MAP y PED de ambos análisis. Debido a que las muestras que comprenden el subconjunto para el \textit{Benchmark} pertenecen a lotes diferentes y el análisis por parte de Código 46 se hizo por separado, vimos la necesidad de generar de nuevo un \textit{script} de Bash. Este \textit{script} produce un archivo PED con las muestras del \textit{samplesheet} antes mencionado ocupando únicamente los archivos PED que fueron generados a partir de los mismos archivos IDAT. De la misma forma, este \textit{script} puede ser adaptado para generar un archivo PED de otro conjunto de muestras. Puesto que los archivos MAP son iguales, siempre y cuando correspondan al mismo microarreglo, utilizamos uno de lo MAP disponibles para hacer la comparación entre archivos PED.
+Para la comparación del genotipado obtenido en GenomeStudio y el entregado por la empresa Código 46 con la misma plataforma, se utilizaron los archivos MAP y PED de ambos análisis. Debido a que las muestras que comprenden el subconjunto para el \textit{Benchmark} pertenecen a lotes diferentes y el análisis por parte de Código 46 se hizo por separado, vimos la necesidad de generar de nuevo un \textit{script} de Bash. Este \textit{script} produce un archivo PED con las muestras del \textit{samplesheet} antes mencionado ocupando únicamente los archivos PED que fueron generados a partir de los mismos archivos IDAT. De la misma forma, este \textit{script} puede ser adaptado para generar un archivo PED de otro conjunto de muestras. Puesto que los archivos MAP son iguales, siempre y cuando correspondan al mismo microarreglo, utilizamos uno de lo MAP disponibles para hacer la comparación entre archivos PED.
 
 \section*{Análisis y y genotipificación en \texttt{R}}
 
@@ -88,5 +87,26 @@ raw_green_boxplot
 
 \bibliographystyle{unsrt}
 \bibliography{repbench}
+
+\section*{Figuras y tablas}
+
+\subsection*{Figuras}
+
+En el \textit{dossier} entregado junto con el reporte se pueden encontrar todas las figuras descritas a lo largo de éste en formato PNG, adjuntas en la subcarpeta \textbf{Figuras}.
+
+A continuación, se enumeran las figuras con una breve descripción.
+
+\subsection*{Tablas}
+
+En el \textit{dossier} entregado junto con el reporte se pueden encontrar todas las tablas descritas a lo largo de éste en formato CSV, adjuntas en la subcarpeta \textbf{Tablas}.
+
+A continuación, se enumeran las tablas con una breve descripción.
+
+\begin{tabular}{ l | l }
+  1_benchmark_samplesheet.csv & Muestras utilizadas para análisis y genotipificación en GenomeStudio, y metadatos requeridos por el software \hline
+  2_ & Tabla CNV \hline
+  
+  
+\end{tabular}
 
 \end{document}
