@@ -37,7 +37,6 @@ library(ggplot2)
 library(tikzDevice) # Pretty plots with LaTeX
 knitr::opts_chunk$set(echo = FALSE, warning=FALSE)
 
-setwd("~")
 dir <- "R_Benchmark"
 
 # Intensity graphs
