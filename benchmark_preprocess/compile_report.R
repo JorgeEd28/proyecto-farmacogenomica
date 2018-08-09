@@ -3,7 +3,7 @@ output_sufix <- "Reporte_benchmark"
 file_name <- paste(output_sufix, "tex", sep = ".")
 
 # Compile Rnw to Latex
-knitr::knit("Microarray.Rnw", output = file_name)
+knitr::knit("Reporte_benchmark.Rnw", output = file_name)
 
 # Compile Latex to PDF
 system(paste("pdflatex -interaction=nonstopmode", file_name))
