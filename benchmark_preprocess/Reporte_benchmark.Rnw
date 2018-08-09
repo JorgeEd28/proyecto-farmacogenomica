@@ -70,18 +70,18 @@ path_tables <- c(file.path("BENCHMARK", "benchmark_samplesheet.csv"),
                                   "prop_diff_by_sample_r_gs.csv",
                                   "frec_diff_by_snp_r_gs.csv",
                                   "frec_diff_by_n_variants_r_gs.csv")))
-name_tablas <- c("1_benchmark_samplesheet.csv",
-                 "2_cnv_analysis.txt",
-                 "3_props.csv",
-                 "4_frecs.csv",
-                 "5_frecs_n.csv",
-                 "6_rep_props.csv",
-                 "7_rep_frecs.csv",
-                 "8_rep_frecs_n.csv",
-                 "9_samples_batch.csv",
-                 "10_crlmm_props.csv",
-                 "11_crlmm_frecs.csv",
-                 "12_crlmm_frecs_n.csv")
+name_tablas <- c("1-benchmark-samplesheet.csv",
+                 "2-cnv-analysis.txt",
+                 "3-props.csv",
+                 "4-frecs.csv",
+                 "5-frecs-n.csv",
+                 "6-rep-props.csv",
+                 "7-rep-frecs.csv",
+                 "8-rep-frecs-n.csv",
+                 "9-samples-batch.csv",
+                 "10-crlmm-props.csv",
+                 "11-crlmm-frecs.csv",
+                 "12-crlmm-frecs-n.csv")
 i = 0
 @
 
