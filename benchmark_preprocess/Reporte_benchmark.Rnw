@@ -83,16 +83,15 @@ name_tablas <- c("1-benchmark-samplesheet.csv",
                  "10-crlmm-props.csv",
                  "11-crlmm-frecs.csv",
                  "12-crlmm-frecs-n.csv")
-i = 0
 @
 
 \section*{Análisis de IDAT crudos y genotipificación de muestras con GenomeStudio}
 
-El análisis y la genotipificación en GenomeStudio se llevó a cabo usando los archivos IDAT de un conjunto de 51 muestras seleccionadas por el grupo de la Dra. Vanessa González Covarrubias, y cuya información se encuentra en un archivo CSV (\texttt{\Sexpr{i=+1; name_tablas[i]}}) con el formato del \textit{samplesheet} requerido por GenomeStudio. Para el flujo del análisis y las métricas necesarias para el llamado de variantes, se utilizaron los recomendados por las notas técnicas de Illumina, así como de protocolos de investigación estandarizados \cite{zhao2017strategies, manualgs}. El algoritmo que utiliza la plataforma de GenomeStudio está patentada y registrada con el nombre de GenCall \cite{kermani2006artificial}.
+El análisis y la genotipificación en GenomeStudio se llevó a cabo usando los archivos IDAT de un conjunto de 51 muestras seleccionadas por el grupo de la Dra. Vanessa González Covarrubias, y cuya información se encuentra en un archivo CSV (\texttt{\Sexpr{name_tablas[1]}}) con el formato del \textit{samplesheet} requerido por GenomeStudio. Para el flujo del análisis y las métricas necesarias para el llamado de variantes, se utilizaron los recomendados por las notas técnicas de Illumina, así como de protocolos de investigación estandarizados \cite{zhao2017strategies, manualgs}. El algoritmo que utiliza la plataforma de GenomeStudio está patentada y registrada con el nombre de GenCall \cite{kermani2006artificial}.
 
 El análisis en GenomeStudio se hizo con el módulo \textit{Genotyping}, usando el \textit{samplesheet} anteriormente descrito, el \textit{Manifest} correspondiente al microarreglo (asimismo entregado por Código 46) y los IDAT seleccionados. Una vez hecha la genotipificación, se hizo el \textit{clustering} de los SNPs seleccionando \textbf{Analysis | Cluster All SNPs} dentro de GenomeStudio usando un umbral de 0.15 para el llamado de variantes. Posteriormente se generó un solo archivo PED y un MAP, por medio del \textit{plugin} de \textit{PLINK Input Report} versión 2.1.4 que se puede descargar de la página de Illumina. 
 
-Para el análisis de variantes en número de copias (CNVs) se utilizó el \textit{plugin cnvPartition CNV Analysis} versión 3.2.1 y se agregaron a la tabla de resultados las columnas de \textit{CNV Value} y \textit{CNV Confidence}, la cual se exportó en formato TXT (\texttt{\Sexpr{i=+1; name_tablas[i]}}).
+Para el análisis de variantes en número de copias (CNVs) se utilizó el \textit{plugin cnvPartition CNV Analysis} versión 3.2.1 y se agregaron a la tabla de resultados las columnas de \textit{CNV Value} y \textit{CNV Confidence}, la cual se exportó en formato TXT (\texttt{\Sexpr{name_tablas[2]}}).
 
 \section*{\textit{Benchmark} de archivos generados con GenomeStudio, con archivos originales}
 
@@ -116,9 +115,9 @@ prop_diff_by_sample_density
 
 La afirmación anterior se extrapola no sólo a las 51 muestras, sino a todas las que conforman el estudio (considerandoa que la muestra es representativa de la población). Utilizando la prueba $t$ de Student con 50 grados de libertad ($n - 1$), y definiendo como hipótesis nula que la media de la proporción de diferencia de las muestras es mayor o igual a 0.01 ($H_o:\ \mu_{p} \geq 0.01$) e hipótesis alternativa que la media de la proporción de diferencia de las muestras es menor a 0.01 ($H_a:\ \mu_{p} < 0.01$), es posible concluir que la media de proporciones de diferencias de genotipos de los alelos para todas las muestras es menor a 0.01, con un 99\% de confianza.
 
-Las muestras con sus respectivas proporciones de diferencias se pueden encontrar en el CSV (\texttt{\Sexpr{i=+1; name_tablas[i]}})
+Las muestras con sus respectivas proporciones de diferencias se pueden encontrar en el CSV (\texttt{\Sexpr{name_tablas[3]}})
 
-También se analizó la frecuencia con la que difieren las variantes entre las 51 muestras. En este caso, se consideró que la variante difería de un archivo PED a otro si al menos un alelo con tenía genotipo distinto; dicho de otro modo, los genotipos se analizaron en pares y no como alelos individuales, como en el análisis por muestra. En el CSV \texttt{\Sexpr{i=+1; name_tablas[i]}} se encuentra cada una de las 669672 variantes, y la frecuencia absoluta de diferencia entre muestras; en el CSV \texttt{\Sexpr{i=+1; name_tablas[i]}} se cuentan el número de muestras por cada valor de frecuencia. En la figura \ref{fig:frec_diff_by_snp_barplot} se muestra cuántas variantes tuvieron frecuencias de diferencia desde 1 hasta 51. Como se puede observar, una cantidad considerable de variantes sólo fueron diferentes en una o dos muestras.
+También se analizó la frecuencia con la que difieren las variantes entre las 51 muestras. En este caso, se consideró que la variante difería de un archivo PED a otro si al menos un alelo con tenía genotipo distinto; dicho de otro modo, los genotipos se analizaron en pares y no como alelos individuales, como en el análisis por muestra. En el CSV \texttt{\Sexpr{name_tablas[4]}} se encuentra cada una de las 669672 variantes, y la frecuencia absoluta de diferencia entre muestras; en el CSV \texttt{\Sexpr{name_tablas[5]}} se cuentan el número de muestras por cada valor de frecuencia. En la figura \ref{fig:frec_diff_by_snp_barplot} se muestra cuántas variantes tuvieron frecuencias de diferencia desde 1 hasta 51. Como se puede observar, una cantidad considerable de variantes sólo fueron diferentes en una o dos muestras.
 
 <<frec_diff_by_n_variants_barplot, dev='tikz', fig.pos='H', fig.height = 4, fig.cap = "Gráfico de barras con el número de variantes por cada frecuencia absoluta de diferencia entre las 51 muestras">>=
 frec_diff_by_n_variants_barplot
@@ -130,7 +129,7 @@ Para aquellas variantes que difieren de 40 a 51 muestras, la alta frecuencia pue
 
 Una vez realizada la comparación entre los archivos PED generados, se llevó a cabo una comparación de los genotipos entre las muestras con sus respectivas réplicas, usando los archivos PED generados por Código 46. Se identificaron únicamente 8 muestras con una o más réplicas y se realizó su comparación con las muestras de las cuales eran réplicas según el \textit{samplesheet}.
 
-La variabilidad entre réplicas técnicas puede ser explicada por factores como el lote en el que fueron procesadas, el personal encargado del experimento, y hasta de factores térmicos que no son fácilmente controlables. Sin embargo, las proporciones que se observan en la figura \ref{reps_prop_diff_by_sample_barplot} son de arriba del 10\% para la muestra 60 y por debajo del 5\% para las otras 7. Cabe destacar que la muestra 60 también fue de las que tuvieron mayor proporción de diferencia en la comparación entre archivos PED. Las muestras con sus respectivas proporciones de diferencias con sus réplicas se pueden encontrar en el CSV (\texttt{\Sexpr{i=+1; name_tablas[i]}}).
+La variabilidad entre réplicas técnicas puede ser explicada por factores como el lote en el que fueron procesadas, el personal encargado del experimento, y hasta de factores térmicos que no son fácilmente controlables. Sin embargo, las proporciones que se observan en la figura \ref{reps_prop_diff_by_sample_barplot} son de arriba del 10\% para la muestra 60 y por debajo del 5\% para las otras 7. Cabe destacar que la muestra 60 también fue de las que tuvieron mayor proporción de diferencia en la comparación entre archivos PED. Las muestras con sus respectivas proporciones de diferencias con sus réplicas se pueden encontrar en el CSV (\texttt{\Sexpr{name_tablas[6]}}).
 
 <<reps_prop_diff_by_sample_barplot, dev='tikz', fig.pos='H', fig.height = 4, fig.cap = "Gráfico de barras de las proporciones de diferencias entre genotipos de alelos para muestras con réplicas">>=
 reps_prop_diff_by_sample_barplot
@@ -142,7 +141,7 @@ La distribución de densidad de los valores de proporción de diferencia que se 
 reps_prop_diff_by_sample_density
 @
 
-Como en el caso de la comparación entre archivos PED, se obtuvo la frecuencia absoluta de diferencia entre réplicas de cada variante, así como el número de variantes por frecuencia de diferencia. Dichas tablas se pueden encontrar en los CSV \texttt{\Sexpr{i=+1; name_tablas[i]}} y \texttt{\Sexpr{i=+1; name_tablas[i]}}. Dado que las muestras con réplicas son muy pocas, no es posible confirmar si aquellas variantes que difieren en ocho pares de muestras, se debe a algun factor de confusión, o si es producto de la variabilidad intrínseca entre muestras en cada uno de los casos.
+Como en el caso de la comparación entre archivos PED, se obtuvo la frecuencia absoluta de diferencia entre réplicas de cada variante, así como el número de variantes por frecuencia de diferencia. Dichas tablas se pueden encontrar en los CSV \texttt{\Sexpr{name_tablas[7]}} y \texttt{\Sexpr{name_tablas[8]}}. Dado que las muestras con réplicas son muy pocas, no es posible confirmar si aquellas variantes que difieren en ocho pares de muestras, se debe a algun factor de confusión, o si es producto de la variabilidad intrínseca entre muestras en cada uno de los casos.
 
 \section*{Análisis y y genotipificación en \texttt{R}}
 
@@ -150,7 +149,7 @@ Para la la normalización, análisis y genotipificación en \texttt{R}, se utili
 
 \subsection*{Análisis exploratorio}
 
-En primer lugar, se hizo un análisis exploratorio de los valores de intensidad lumínica de ambos canales de cada microarreglo muestra, para identificar efectos de lote y muestras con comportamientos aberrantes. Los lotes se diferenciaron por días de corrida de los microarreglos (las muestras y sus lotes correspondientes se pueden consultar en el archivo CSV \texttt{\Sexpr{i=+1; name_tablas[i]}}).
+En primer lugar, se hizo un análisis exploratorio de los valores de intensidad lumínica de ambos canales de cada microarreglo muestra, para identificar efectos de lote y muestras con comportamientos aberrantes. Los lotes se diferenciaron por días de corrida de los microarreglos (las muestras y sus lotes correspondientes se pueden consultar en el archivo CSV \texttt{\Sexpr{name_tablas[9]}}).
 
 En las figuras \ref{fig:raw_red_boxplot} y \ref{fig:raw_green_boxplot} se muestran los \textit{boxplot} de los valores de intensidad lumínica (transformados a $\log_2$ para facilitar la visualización), de los canales rojo y verde, respectivamente. Como se puede observar, no hay aparente efecto de lote en las muestras.
 
@@ -192,7 +191,7 @@ Mediante una prueba $t$ de Student con 50 grados de libertad ($n - 1$), y defini
 
 También se obtuvo la frecuencia absoluta de diferencia entre métodos de cada variante, así como el número de variantes por frecuencia de diferencia. En este caso, es importante resaltar que una importante cantidad de variantes resultan con la máxima frecuencia de 51 (21303 variantes), lo cual puede indicar que la parametrización del algoritmo CRLMM puede no ser la más adecuada para este análisis. Sin embargo, y como se indicó anteriormente, la paquetería \texttt{crlmm} no muy flexible ni permite cambiar ciertos parámetros cuando se analiza un microarreglo personalizado o que no se encuentra en su base de datos.
 
-Los CSV con la proporciones de diferencias por muestra, frecuencia absoluta de diferencia y número de variantes por frecuencia de diferencia se encuentran en los archivos \texttt{\Sexpr{i=+1; name_tablas[i]}}, \texttt{\Sexpr{i=+1; name_tablas[i]}} y \texttt{\Sexpr{i=+1; name_tablas[i]}}, respectivamente.
+Los CSV con la proporciones de diferencias por muestra, frecuencia absoluta de diferencia y número de variantes por frecuencia de diferencia se encuentran en los archivos \texttt{\Sexpr{name_tablas[10]}}, \texttt{\Sexpr{name_tablas[11]}} y \texttt{\Sexpr{name_tablas[12]}}, respectivamente.
 
 \section*{Conclusiones}
 
