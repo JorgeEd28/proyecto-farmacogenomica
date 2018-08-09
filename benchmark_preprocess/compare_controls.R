@@ -18,8 +18,8 @@ out.dir <- "R_Benchmark"
 # Load the PED and MAP files
 map <- read.table(file.path(pedmap.dir, "Benchmark_C46.map"), sep = "\t",
                   colClasses = "character")
-ped <- read.table(file.path(pedmap.dir, "Benchmark_C46.ped"), sep = "\t",
-                  colClasses = "character")
+ped <- data.table::fread(file.path(pedmap.dir, "Benchmark_C46.ped"), sep = "\t",
+                  colClasses = "character", data.table = FALSE)
 
 # Load the samplesheet
 samp <- read.csv(file.path(samp.dir, "benchmark_samplesheet.csv"), 

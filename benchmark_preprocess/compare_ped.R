@@ -16,10 +16,10 @@ map_1 <- read.table(file.path(datadir, "Benchmark", "PLINK_030718_0158", "Benchm
                     sep = "\t", colClasses = "character")
 map_2 <- read.table(file.path(datadir, "Benchmark_C46.map"), 
                     sep = "\t", colClasses = "character")
-ped_1 <- read.table(file.path(datadir, "Benchmark", "PLINK_030718_0158", "Benchmark.ped"), 
-                    sep = "\t", colClasses = "character")
-ped_2 <- read.table(file.path(datadir, "Benchmark_C46.ped"), 
-                    sep = "\t", colClasses = "character")
+ped_1 <- data.table::fread(file.path(datadir, "Benchmark", "PLINK_030718_0158", "Benchmark.ped"), 
+                    sep = "\t", colClasses = "character", data.table = FALSE)
+ped_2 <- data.table::fread(file.path(datadir, "Benchmark_C46.ped"), 
+                    sep = "\t", colClasses = "character", data.table = FALSE)
 
 # Compare MAPs ----------------------------------------------------------------
 
