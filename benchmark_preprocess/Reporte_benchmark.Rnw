@@ -36,6 +36,7 @@ La validación contó con los siguientes pasos:
 library(ggplot2)
 library(tikzDevice) # Pretty plots with LaTeX
 
+setwd("~")
 dir <- "R_Benchmark"
 
 # Intensity graphs
