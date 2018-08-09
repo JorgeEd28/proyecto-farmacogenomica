@@ -117,7 +117,7 @@ La afirmación anterior se extrapola no sólo a las 51 muestras, sino a todas la
 
 Las muestras con sus respectivas proporciones de diferencias se pueden encontrar en el CSV (\texttt{\Sexpr{name_tablas[3]}})
 
-También se analizó la frecuencia con la que difieren las variantes entre las 51 muestras. En este caso, se consideró que la variante difería de un archivo PED a otro si al menos un alelo con tenía genotipo distinto; dicho de otro modo, los genotipos se analizaron en pares y no como alelos individuales, como en el análisis por muestra. En el CSV \texttt{\Sexpr{name_tablas[4]}} se encuentra cada una de las 669672 variantes, y la frecuencia absoluta de diferencia entre muestras; en el CSV \texttt{\Sexpr{name_tablas[5]}} se cuentan el número de muestras por cada valor de frecuencia. En la figura \ref{fig:frec_diff_by_snp_barplot} se muestra cuántas variantes tuvieron frecuencias de diferencia desde 1 hasta 51. Como se puede observar, una cantidad considerable de variantes sólo fueron diferentes en una o dos muestras.
+También se analizó la frecuencia con la que difieren las variantes entre las 51 muestras. En este caso, se consideró que la variante difería de un archivo PED a otro si al menos un alelo con tenía genotipo distinto; dicho de otro modo, los genotipos se analizaron en pares y no como alelos individuales, como en el análisis por muestra. En el CSV \texttt{\Sexpr{name_tablas[4]}} se encuentra cada una de las 669672 variantes, y la frecuencia absoluta de diferencia entre muestras; en el CSV \texttt{\Sexpr{name_tablas[5]}} se cuentan el número de muestras por cada valor de frecuencia. En la figura \ref{fig:frec_diff_by_n_variants_barplot} se muestra cuántas variantes tuvieron frecuencias de diferencia desde 1 hasta 51. Como se puede observar, una cantidad considerable de variantes sólo fueron diferentes en una o dos muestras.
 
 <<frec_diff_by_n_variants_barplot, dev='tikz', fig.pos='H', fig.height = 4, fig.cap = "Gráfico de barras con el número de variantes por cada frecuencia absoluta de diferencia entre las 51 muestras">>=
 frec_diff_by_n_variants_barplot
@@ -129,13 +129,13 @@ Para aquellas variantes que difieren de 40 a 51 muestras, la alta frecuencia pue
 
 Una vez realizada la comparación entre los archivos PED generados, se llevó a cabo una comparación de los genotipos entre las muestras con sus respectivas réplicas, usando los archivos PED generados por Código 46. Se identificaron únicamente 8 muestras con una o más réplicas y se realizó su comparación con las muestras de las cuales eran réplicas según el \textit{samplesheet}.
 
-La variabilidad entre réplicas técnicas puede ser explicada por factores como el lote en el que fueron procesadas, el personal encargado del experimento, y hasta de factores térmicos que no son fácilmente controlables. Sin embargo, las proporciones que se observan en la figura \ref{reps_prop_diff_by_sample_barplot} son de arriba del 10\% para la muestra 60 y por debajo del 5\% para las otras 7. Cabe destacar que la muestra 60 también fue de las que tuvieron mayor proporción de diferencia en la comparación entre archivos PED. Las muestras con sus respectivas proporciones de diferencias con sus réplicas se pueden encontrar en el CSV (\texttt{\Sexpr{name_tablas[6]}}).
+La variabilidad entre réplicas técnicas puede ser explicada por factores como el lote en el que fueron procesadas, el personal encargado del experimento, y hasta de factores térmicos que no son fácilmente controlables. Sin embargo, las proporciones que se observan en la figura \ref{fig:reps_prop_diff_by_sample_barplot} son de arriba del 10\% para la muestra 60 y por debajo del 5\% para las otras 7. Cabe destacar que la muestra 60 también fue de las que tuvieron mayor proporción de diferencia en la comparación entre archivos PED. Las muestras con sus respectivas proporciones de diferencias con sus réplicas se pueden encontrar en el CSV (\texttt{\Sexpr{name_tablas[6]}}).
 
 <<reps_prop_diff_by_sample_barplot, dev='tikz', fig.pos='H', fig.height = 4, fig.cap = "Gráfico de barras de las proporciones de diferencias entre genotipos de alelos para muestras con réplicas">>=
 reps_prop_diff_by_sample_barplot
 @
 
-La distribución de densidad de los valores de proporción de diferencia que se muestra en la figura \ref{reps_prop_diff_by_sample_density} indican que la mayor parte de estos valores se encuentran cerca del 0\%.
+La distribución de densidad de los valores de proporción de diferencia que se muestra en la figura \ref{fig:reps_prop_diff_by_sample_density} indican que la mayor parte de estos valores se encuentran cerca del 0\%.
 
 <<reps_prop_diff_by_sample_density, dev='tikz', fig.pos='H', fig.height = 4, fig.cap = "Distribución de los valores de proporción de diferencias para muestras con réplicas">>=
 reps_prop_diff_by_sample_density
