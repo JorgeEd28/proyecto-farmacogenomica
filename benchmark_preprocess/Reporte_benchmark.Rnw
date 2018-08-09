@@ -205,7 +205,7 @@ También se corroboró la eficacia de la plataforma de GenomeStudio contra otros
 <<move_tables, results = "hide">>=
 dir.create("tables")
 name_tablas <- file.path("tables", name_tablas)
-file.rename(from = path_tables, to = name_tablas)
+file.copy(from = path_tables, to = name_tablas)
 @
 
 
