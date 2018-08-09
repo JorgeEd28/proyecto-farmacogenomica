@@ -11,6 +11,7 @@ system(paste("pdflatex -interaction=nonstopmode", file_name))
 system(paste("bibtex", output_sufix))
 # Add figures names
 system(paste("pdflatex -interaction=nonstopmode", file_name))
+system(paste("pdflatex -interaction=nonstopmode", file_name))
 
 # Delete not needed files
 files <- list.files(pattern = output_sufix)
