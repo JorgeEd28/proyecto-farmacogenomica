@@ -20,6 +20,8 @@ map <- read.table(file.path(pedmap.dir, "Benchmark_C46.map"), sep = "\t",
                   colClasses = "character")
 ped <- data.table::fread(file.path(pedmap.dir, "Benchmark_C46.ped"), sep = "\t",
                   colClasses = "character", data.table = FALSE)
+# If this error is recieved: segfault from C stack overflow
+# increase the stack size limit of your session in bash with: ulimit -s
 
 # Load the samplesheet
 samp <- read.csv(file.path(samp.dir, "benchmark_samplesheet.csv"), 

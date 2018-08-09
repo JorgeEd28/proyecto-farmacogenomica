@@ -20,6 +20,8 @@ ped_1 <- data.table::fread(file.path(datadir, "Benchmark", "PLINK_030718_0158", 
                     sep = "\t", colClasses = "character", data.table = FALSE)
 ped_2 <- data.table::fread(file.path(datadir, "Benchmark_C46.ped"), 
                     sep = "\t", colClasses = "character", data.table = FALSE)
+# If this error is recieved: segfault from C stack overflow
+# increase the stack size limit of your session in bash with: ulimit -s
 
 # Compare MAPs ----------------------------------------------------------------
 
