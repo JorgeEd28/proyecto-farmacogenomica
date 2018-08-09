@@ -58,7 +58,7 @@ prop_diff_by_sample_barplot_r_gs <- readRDS(file.path(dir, "prop_diff_by_sample_
 prop_diff_by_sample_density_r_gs <- readRDS(file.path(dir, "prop_diff_by_sample_density_r_gs.rds"))
 
 # Tablas
-path_tablas <- c(file.path("BENCHMARK", "benchmark_samplesheet.csv"),
+path_tables <- c(file.path("BENCHMARK", "benchmark_samplesheet.csv"),
                  file.path("GenomeStudio", "Benchmark","CNV_Bookmark_Analyses.txt"),
                  file.path(dir, c("prop_diff_by_sample.csv",
                                   "frec_diff_by_snp.csv",
@@ -200,6 +200,13 @@ A partir del \textit{Benchmark} realizado, se comprobó la reproducibilidad de l
 También se pudo verificar que las réplicas técnicas de las muestras generan resultados muy similares entre éstas, asegurando la reproducibilidad del trabajo en laboratorio y confirmando que factores como el efecto de lote o el personal que manipula los microarreglos no introducen variaciones significativas.
 
 También se corroboró la eficacia de la plataforma de GenomeStudio contra otros métodos alternativos de análisis, en este caso el algoritmo CRLMM. A pesar de que se espera que los resultados del genotipado entre ambos métodos, se espera que en promedio sea igual en más de un 95\% con un 99\% de confianza, la paquetería \texttt{crlmm} no está lo suficientemente documentada, además de contar con \textit{bugs} difíciles de identificar, no ser muy flexible en la parametrización del algoritmo y no generar normalizaciones lo suficientemente satisfactorias, sin contar que el tiempo de desarrollo y la curva de aprendizaje de dicha herramienta es significativamente más compleja que el uso de GenomeStudio.
+
+<<move_tables, echo=FALSE>>=
+dir.create("tables")
+name_tablas <- file.path("tables", name_tablas)
+file.rename(from = path_tables, to = name_tablas)
+@
+
 
 \bibliographystyle{unsrt}
 \bibliography{repbench}
