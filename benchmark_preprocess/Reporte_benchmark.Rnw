@@ -20,13 +20,12 @@
 
 \maketitle
 
-El siguiente documento reporta los resultados obtenidos de la validación de los archivos MAP y PED originales (entregados por la empresa Código 46), a partir de distintos análisis con los archivos de intensidad (IDAT) crudos, que contienen las cuantificaciones de señal asociadas a las variantes del chip Infinium Global Screening Array-24 Kit de Illumina, y personalizado para el Instituto Nacional de Medicina Genómica. Dicho análisis se llevó a cabo utilizando herramientas de código abierto y licencia gratuita; entre éstas se encuentran \texttt{R}, los paquetes \texttt{Bioconductor}, \texttt{crlmm} y \texttt{ggplot2}, GenomeStudio Software© de Illumina, Inc., y \LaTeX para la generación de reportes.
+El siguiente documento reporta los resultados obtenidos de la validación de los archivos MAP y PED originales (entregados por la empresa Código 46), a partir de distintos análisis con los archivos de intensidad (IDAT) crudos, que contienen las cuantificaciones de señal asociadas a las 669672 variantes del chip Infinium Global Screening Array-24 Kit de Illumina, y personalizado para el Instituto Nacional de Medicina Genómica. Dicho análisis se llevó a cabo utilizando herramientas de código abierto y licencia gratuita; entre éstas se encuentran \texttt{R}, los paquetes \texttt{Bioconductor}, \texttt{crlmm} y \texttt{ggplot2}, GenomeStudio Software© de Illumina, Inc., y \LaTeX para la generación de reportes.
 
 La validación contó con los siguientes pasos:
 \begin{enumerate}
-  \item Análisis de IDAT crudos en GenomeStudio
-  \item Genotipificación y generación de archivos PED y MAP con GenomeStudio
-  \item \textit{Benchmark} (comparación) de archivos PED y MAP generados con GenomeStudio, con archivos PED y MAP originales
+  \item Análisis de IDAT crudos y genotipificación de muestras con GenomeStudio
+  \item \textit{Benchmark} (comparación) de archivos generados con GenomeStudio, con archivos originales.
   \item Análisis y genotipificación de IDAT crudos con paquetería de \texttt{R}
   \item \textit{Benchmark} de archivos PED y MAP generados con \texttt{R}, con archivos PED y MAP originales
 \end{enumerate}
@@ -45,91 +44,114 @@ raw_green_boxplot <- readRDS(file.path(dir, "raw_green_boxplot.rds"))
 norm_red_boxplot <- readRDS(file.path(dir, "norm_red_boxplot.rds"))
 norm_green_boxplot <- readRDS(file.path(dir, "norm_green_boxplot.rds"))
 
-# Intensity tables
-raw_red_statistics <- read.csv(file.path(dir, "raw_red_statistics.csv"), as.is = TRUE)
-raw_green_statistics <- read.csv(file.path(dir, "raw_green_statistics.csv"), as.is = TRUE)
-norm_red_statistics <- read.csv(file.path(dir, "norm_red_statistics.csv"), as.is = TRUE)
-norm_green_statistics <- read.csv(file.path(dir, "norm_green_statistics.csv"), as.is = TRUE)
-
-# PEDs benchmark plots
+# PEDs benchmark
 prop_diff_by_sample_barplot <- readRDS(file.path(dir, "prop_diff_by_sample_barplot.rds"))
 prop_diff_by_sample_density <- readRDS(file.path(dir, "prop_diff_by_sample_density.rds"))
-fec_diff_by_snp_barplot <- readRDS(file.path(dir, "frec_diff_by_snp_barplot.rds"))
+frec_diff_by_n_variants_barplot <- readRDS(file.path(dir, "frec_diff_by_n_variants_barplot.rds"))
 
 # Replicates benchmark plots
 reps_prop_diff_by_sample_barplot <- readRDS(file.path(dir, "replicates_prop_diff_by_sample_barplot.rds"))
 reps_prop_diff_by_sample_density <- readRDS(file.path(dir, "replicates_prop_diff_by_sample_density.rds"))
-reps_freq_diff_by_snp_barplot <- readRDS(file.path(dir, "replicates_freq_diff_by_snp_barplot.rds"))
 
-# Barplot of difference frequencies by n variants
-frec_diff_by_n_variants_barplot <- readRDS(file.path(dir, "frec_diff_by_n_variants_barplot.rds"))
+# R benchmark plots
+prop_diff_by_sample_barplot_r_gs <- readRDS(file.path(dir, "prop_diff_by_sample_barplot_r_gs.rds"))
+prop_diff_by_sample_density_r_gs <- readRDS(file.path(dir, "prop_diff_by_sample_density_r_gs.rds"))
+
+# Tablas
+path_tablas <- c(file.path("BENCHMARK", "benchmark_samplesheet.csv"),
+                 file.path("GenomeStudio", "Benchmark","CNV_Bookmark_Analyses.txt"),
+                 file.path(dir, c("prop_diff_by_sample.csv",
+                                  "frec_diff_by_snp.csv",
+                                  "frec_diff_by_n_variants.csv",
+                                  "replicates_prop_diff_by_sample.csv",
+                                  "replicates_freq_diff_by_snp.csv",
+                                  "replicates_frec_diff_by_n_variants.csv",
+                                  "sample-batch.csv",
+                                  "prop_diff_by_sample_r_gs.csv",
+                                  "frec_diff_by_snp_r_gs.csv",
+                                  "frec_diff_by_n_variants_r_gs.csv")))
+name_tablas <- c("1_benchmark_samplesheet.csv",
+                 "2_cnv_analysis.txt",
+                 "3_props.csv",
+                 "4_frecs.csv",
+                 "5_frecs_n.csv",
+                 "6_rep_props.csv",
+                 "7_rep_frecs.csv",
+                 "8_rep_frecs_n.csv",
+                 "9_samples_batch.csv",
+                 "10_crlmm_props.csv",
+                 "11_crlmm_frecs.csv",
+                 "12_crlmm_frecs_n.csv")
+i = 0
 @
 
-\section*{Análisis de IDAT crudos y genotipificación en GenomeStudio}
+\section*{Análisis de IDAT crudos y genotipificación de muestras con GenomeStudio}
 
-El análisis y la genotipificación en GenomeStudio se llevó a cabo usando los archivos IDAT de un conjunto de 51 muestras seleccionadas por el grupo de la Dra. Vanessa González Covarrubias, y cuya información se encuentra en un archivo CSV (1_benchmark_samplesheet.csv) con el formato del \textit{samplesheet} requerido por GenomeStudio. La selección de los archivos pertinentes a partir de los datos crudos entregados por la empresa Codigo 46 se hizo mediante un \textit{script} de \texttt{bash} y que puede ser adaptado posteriormente para la selección de cualquier otro subconjunto de muestras y su posterior análisis en GenomeStudio. %Será necesario hablar de este bash?
+El análisis y la genotipificación en GenomeStudio se llevó a cabo usando los archivos IDAT de un conjunto de 51 muestras seleccionadas por el grupo de la Dra. Vanessa González Covarrubias, y cuya información se encuentra en un archivo CSV (\Sexpr{i=+1; name_tablas[i]}) con el formato del \textit{samplesheet} requerido por GenomeStudio. Para el flujo del análisis y las métricas necesarias para el llamado de variantes, se utilizaron los recomendados por las notas técnicas de Illumina, así como de protocolos de investigación estandarizados \cite{zhao2017strategies, manualgs}. El algoritmo que utiliza la plataforma de GenomeStudio está patentada y registrada con el nombre de GenCall \cite{kermani2006artificial}.
 
-El análisis en GenomeStudio se hizo con el módulo \textit{Genotyping}, usando el \textit{samplesheet} anteriormente descrito, el \textit{Manifest} correspondiente al microarreglo (asimismo entregado por Código 46) y los IDAT seleccionados. Una vez hecha la genotipificación, se hizo el \textit{clustering} de los SNPs seleccionando \textbf{Analysis | Cluster All SNPs} dentro de GenomeStudio usando un umbral de 0.15 para el llamado de variantes. Posteriormente la generación de los archivos PED y MAP se hizo empleando el \textit{plugin} de \textit{PLINK Input Report} versión 2.1.4 que se puede descargar de la página de Illumina.
+El análisis en GenomeStudio se hizo con el módulo \textit{Genotyping}, usando el \textit{samplesheet} anteriormente descrito, el \textit{Manifest} correspondiente al microarreglo (asimismo entregado por Código 46) y los IDAT seleccionados. Una vez hecha la genotipificación, se hizo el \textit{clustering} de los SNPs seleccionando \textbf{Analysis | Cluster All SNPs} dentro de GenomeStudio usando un umbral de 0.15 para el llamado de variantes. Posteriormente se generó un solo archivo PED y un MAP, por medio del \textit{plugin} de \textit{PLINK Input Report} versión 2.1.4 que se puede descargar de la página de Illumina. 
 
-Para el análisis de variantes en número de copias (CNVs) se utilizó el \textit{plugin cnvPartition CNV Analysis} versión 3.2.1 y se agregaron a la tabla de resultados las columnas de \textit{CNV Value} y \textit{CNV Confidence}. Esta tabla se exportó en formato CSV para su interpretación. %Especificar CSV
+Para el análisis de variantes en número de copias (CNVs) se utilizó el \textit{plugin cnvPartition CNV Analysis} versión 3.2.1 y se agregaron a la tabla de resultados las columnas de \textit{CNV Value} y \textit{CNV Confidence}, la cual se exportó en formato TXT (\Sexpr{i=+1; name_tablas[i]}).
 
-\section*{\textit{Benchmark} con archivos generados en GenomeStudio}
+\section*{\textit{Benchmark} de archivos generados con GenomeStudio, con archivos originales}
 
-Para la comparación del genotipado obtenido en GenomeStudio y el entregado por la empresa Código 46 con la misma plataforma, se utilizaron los archivos MAP y PED de ambos análisis. Debido a que las muestras que comprenden el subconjunto para el \textit{Benchmark} pertenecen a lotes diferentes y el análisis por parte de Código 46 se hizo por separado, vimos la necesidad de generar de nuevo un \textit{script} de Bash. Este \textit{script} produce un archivo PED con las muestras del \textit{samplesheet} antes mencionado ocupando únicamente los archivos PED que fueron generados a partir de los mismos archivos IDAT. De la misma forma, este \textit{script} puede ser adaptado para generar un archivo PED de otro conjunto de muestras. Puesto que los archivos MAP son iguales, siempre y cuando correspondan al mismo microarreglo, utilizamos uno de lo MAP disponibles para hacer la comparación entre archivos PED.
+Para la comparación del genotipado obtenido en GenomeStudio y el entregado por la empresa Código 46 con la misma plataforma, se utilizaron los archivos MAP y PED de ambos análisis. Dado que los archivos PED originales se encontraban segmentados, uno por cada muestra, primero se generó un solo archivo con todas las muestras necesarias para la comparación. Asimismo, se compararon los archivos MAP para corroborar que todos eran idénticos entre sí.
 
 \subsection*{Comparación de archivos PED}
 
-Para determinar el grado de similitud entre los resultados de Código 46 y los nuestros, se hizo una comparación de cada uno de los genotipos de las muestras en el archivo PED generado con GenomeStudio y las muestras correspondientes en el archivo PED generado por Código 46.
+Para determinar el grado de similitud entre los resultados de Código 46 y los nuestros, se hizo una comparación de cada uno de los genotipos de cada alelo de las muestras en el archivo PED generado con GenomeStudio y las muestras correspondientes en el archivo PED generado por Código 46. El total de genotipos analizados fue de 1339344, lo equivalente a las 669672 variantes en ambos alelos.
 
-La proporción de diferencias entre los genotipos para cada una de las muestras es muy bajo. Se puede observar en la figura \ref{fig:prop_diff_by_sample_barplot} que la mayoría de las muestras difieren en menos del 2.5\% entre ambos archivos PED y las únicas excepciones son los genotipos correspondientes a las muestras PX0069 y 60 con una proporción de diferencia en ambos casos cercana al 15\%.
+En la figura \ref{fig:prop_diff_by_sample_barplot}, se muestran a modo de gráfico de barras las proporciones de diferencias entre genotipos de los alelos para cada una de las muestras, entre los archivos PED originales y los generados con GenomeStudio; una proporción de 0 indicaría coincidencia perfecta (no hay ninguna diferencia entre ambos archivos PED). Como se puede observar, la mayoría de las muestras difieren en menos del 2.5\% entre ambos archivos PED y las únicas excepciones son los genotipos correspondientes a las muestras PX0069 y 60, con una proporción de diferencia en ambos casos cercana al 15\%.
 
-<<prop_diff_by_sample_barplot, echo=FALSE, dev='tikz', fig.pos='H', fig.height = 4, fig.cap = "Gráfico de barras por muestra de las proporciones de diferencias de alelos entre ambos archivos PED">>=
+<<prop_diff_by_sample_barplot, echo=FALSE, dev='tikz', fig.pos='H', fig.height = 4, fig.cap = "Gráfico de barras de las proporciones de diferencias entre genotipos de alelos para todas las muestras entre ambos archivos PED">>=
 prop_diff_by_sample_barplot
 @
 
-La distribución de los valores de las proporciones que se muestra en la figura \ref{fig:prop_diff_by_sample_density} muestra que la mayor parte de los valores calculados se encuentran muy cercanos al 0\%.
+La distribución de los valores de las proporciones de diferencia de las 51 muestras que se pueden observar en la figura \ref{fig:prop_diff_by_sample_density}, muestra que la mayor parte de los valores calculados se encuentran cercanos al 0\%.
 
-<<prop_diff_by_sample_density, echo=FALSE, dev='tikz', fig.pos='H', fig.height = 4, fig.cap = "Distribución de los valores de proporción de diferencias calculados para cada muestra">>=
+<<prop_diff_by_sample_density, echo=FALSE, dev='tikz', fig.pos='H', fig.height = 4, fig.cap = "Distribución de los valores de proporción de diferencias para todas las muestras entre ambos archivos PED">>=
 prop_diff_by_sample_density
 @
 
-Si bien la proporción de variantes que difieren entre las muestras es pequeña, un número considerable de variantes difieren para todas o la mayor parte de las muestras. En la figura \ref{fig:frec_diff_by_snp_barplot} se pueden observar 20 de las variantes que difieren para las 51 muestras al comparar los dos archivos PED.
+La afirmación anterior se extrapola no sólo a las 51 muestras, sino a todas las que conforman el estudio (considerandoa que la muestra es representativa de la población). Utilizando la prueba $t$ de Student con 50 grados de libertad ($n - 1$), y definiendo como hipótesis nula que la media de la proporción de diferencia de las muestras es mayor o igual a 0.01 ($H_o:\ \mu_{p} \geq 0.01$) e hipótesis alternativa que la media de la proporción de diferencia de las muestras es menor a 0.01 ($H_a:\ \mu_{p} < 0.01$), es posible concluir que la media de proporciones de diferencias de genotipos de los alelos para todas las muestras es menor a 0.01, con un 99\% de confianza.
 
-<<frec_diff_by_snp_barplot, echo=FALSE, dev='tikz', fig.pos='H', fig.height = 4, fig.cap = "Gráfico de barras con las 20 variantes con mayor número de diferencias entre las muestras">>=
-frec_diff_by_snp_barplot
+Las muestras con sus respectivas proporciones de diferencias se pueden encontrar en el CSV (\Sexpr{i=+1; name_tablas[i]})
+
+También se analizó la frecuencia con la que difieren las variantes entre las 51 muestras. En este caso, se consideró que la variante difería de un archivo PED a otro si al menos un alelo con tenía genotipo distinto; dicho de otro modo, los genotipos se analizaron en pares y no como alelos individuales, como en el análisis por muestra. En el CSV \Sexpr{i=+1; name_tablas[i]} se encuentra cada una de las 669672 variantes, y la frecuencia absoluta de diferencia entre muestras; en el CSV \Sexpr{i=+1; name_tablas[i]} se cuentan el número de muestras por cada valor de frecuencia. En la figura \ref{fig:frec_diff_by_snp_barplot} se muestra cuántas variantes tuvieron frecuencias de diferencia desde 1 hasta 51. Como se puede observar, una cantidad considerable de variantes sólo fueron diferentes en una o dos muestras.
+
+<<frec_diff_by_n_variants_barplot, echo=FALSE, dev='tikz', fig.pos='H', fig.height = 4, fig.cap = "Gráfico de barras con el número de variantes por cada frecuencia absoluta de diferencia entre las 51 muestras">>=
+frec_diff_by_n_variants_barplot
 @
 
-\subsection*{Comparación de las muestras con sus réplicas}
+Para aquellas variantes que difieren de 40 a 51 muestras, la alta frecuencia puede encontrar explicación en el \textit{clustering} para el genotipado. En Código 46 se modificó el umbral para el llamado de algunas variantes; asimismo, mientras en este análisis se utilizó una cantidad relativamente pequeña de muestras, Illumina recomienda utilizar más de 100 para hacer el llamado de variantes con mayor confianza estadística. Se recomienda que para futuros análisis de muestras en GenomeStudio se haga el \textit{clustering} no tomando como base un algoritmo predefinido por el software, sino con un archivo EGT que se solicite a Código 46 para asegurar la reproducibilidad y disminuir el posible sesgo.
 
-Una vez realizada la comparación entre archivos PED generados se observó que las diferencias entre los datos generados por Código 46 y mediante GenomeStudio no diferían en una proporción alta por lo que  se llevó a cabo una comparación de los genotipos entre las muestras y sus réplicas, en aquellos casos que era pertinente, usando los archivos PED generados por Código 46. Se identificaron únicamente 8 muestras con una o más réplicas y se realizó su comparación con las muestras de las cuales eran réplicas según el \textit{samplesheet}.
+\subsection*{Comparación de muestras con sus réplicas}
 
-Al igual que en la comparación entre archivos PED, se realizó una comparación de las proporciones de diferencias entre los genotipos de las muestras con sus réplicas. Las proporciones que se observan en la figura \ref{reps_prop_diff_by_sample_barplot} son de arriba del 10\% para la muestra 60 y por debajo del 5\% para las otras 7.
+Una vez realizada la comparación entre los archivos PED generados, se llevó a cabo una comparación de los genotipos entre las muestras con sus respectivas réplicas, usando los archivos PED generados por Código 46. Se identificaron únicamente 8 muestras con una o más réplicas y se realizó su comparación con las muestras de las cuales eran réplicas según el \textit{samplesheet}.
 
-<<reps_prop_diff_by_sample_barplot, echo=FALSE, dev='tikz', fig.pos='H', fig.height = 4, fig.cap = "Gráfico de barras para las 8 muestras con réplicas de las proporciones de diferencias de alelos">>=
+La variabilidad entre réplicas técnicas puede ser explicada por factores como el lote en el que fueron procesadas, el personal encargado del experimento, y hasta de factores térmicos que no son fácilmente controlables. Sin embargo, las proporciones que se observan en la figura \ref{reps_prop_diff_by_sample_barplot} son de arriba del 10\% para la muestra 60 y por debajo del 5\% para las otras 7. Cabe destacar que la muestra 60 también fue de las que tuvieron mayor proporción de diferencia en la comparación entre archivos PED. Las muestras con sus respectivas proporciones de diferencias con sus réplicas se pueden encontrar en el CSV (\Sexpr{i=+1; name_tablas[i]}).
+
+<<reps_prop_diff_by_sample_barplot, echo=FALSE, dev='tikz', fig.pos='H', fig.height = 4, fig.cap = "Gráfico de barras de las proporciones de diferencias entre genotipos de alelos para muestras con réplicas">>=
 reps_prop_diff_by_sample_barplot
 @
 
-El gráfico de la distribución de densidad de los valores de proporción de diferencia que se muestra en la figure \ref{reps_prop_diff_by_sample_density} indican que la mayor parte de estos valores se encuentran cerca del 0\%. Sin embargo, como se determinó en la figura \ref{reps_prop_diff_by_sample_barplot}, hay valores arriba del 10\%, el cual corresponde a la misma muestra 60, y cercanos al 2.5\%.
+La distribución de densidad de los valores de proporción de diferencia que se muestra en la figura \ref{reps_prop_diff_by_sample_density} indican que la mayor parte de estos valores se encuentran cerca del 0\%.
 
-<<reps_prop_diff_by_sample_density, echo=FALSE, dev='tikz', fig.pos='H', fig.height = 4, fig.cap = "Distribución de los valores de proporción de diferencias entre las muestras y sus réplicas">>=
+<<reps_prop_diff_by_sample_density, echo=FALSE, dev='tikz', fig.pos='H', fig.height = 4, fig.cap = "Distribución de los valores de proporción de diferencias para muestras con réplicas">>=
 reps_prop_diff_by_sample_density
 @
 
-Como en el caso de la comparación entre archivos PED, se genéro un gráfico de barras que se puede observar en la figura \ref{reps_freq_diff_by_snp_barplot} que muestra la frecuencia con la que difieren el top 20 de variantes diferentes entre las muestras y sus réplicas. Todas las variantes que se observan se difieren en al menos 6 de las 8 muestras. Sólo 3 de las 20 variantes difieren en 7 de las muestras y, finalmente, la variante rs13305028 difieren entre la muestra y su réplica en el 100\% de los casos.
-
-<<reps_freq_diff_by_snp_barplot, echo=FALSE, dev='tikz', fig.pos='H', fig.height = 4, fig.cap = "Gráfico de barras con el top 20 de variantes que más difieren entre las muestras y sus réplicas">>=
-reps_freq_diff_by_snp_barplot
-@
+Como en el caso de la comparación entre archivos PED, se obtuvo la frecuencia absoluta de diferencia entre réplicas de cada variante, así como el número de variantes por frecuencia de diferencia. Dichas tablas se pueden encontrar en los CSV \Sexpr{i=+1; name_tablas[i]} y \Sexpr{i=+1; name_tablas[i]}. Dado que las muestras con réplicas son muy pocas, no es posible confirmar si aquellas variantes que difieren en ocho pares de muestras, se debe a algun factor de confusión, o si es producto de la variabilidad intrínseca entre muestras en cada uno de los casos.
 
 \section*{Análisis y y genotipificación en \texttt{R}}
 
-Para la la normalización, análisis y genotipificación en \texttt{R}, se utilizó el paquete \texttt{crlmm}\cite{scharpf2011using}, a través de \texttt{Bioconductor}, diseñado con modelos multinivel para plataformas de microarreglos como Affymetrix e Illumina \cite{ritchie2009r}. Éste paquete es una implementación del algoritmo CRLMM para producir el llamado de genotipos, puntajes de confianza y métricas de calidad adicionales para las variantes y las muestras 
+Para la la normalización, análisis y genotipificación en \texttt{R}, se utilizó el paquete \texttt{crlmm} \cite{scharpf2011using}, a través de \texttt{Bioconductor}, diseñado con modelos multinivel para plataformas de microarreglos como Affymetrix e Illumina \cite{ritchie2009r}. Éste paquete es una implementación del algoritmo CRLMM para producir el llamado de genotipos, puntajes de confianza y métricas de calidad adicionales para las variantes y las muestras.
 
 \subsection*{Análisis exploratorio}
 
-En primer lugar, se hizo un análisis exploratorio de los valores de intensidad lumínica de ambos canales de cada microarreglo muestra, para identificar efectos de lote y muestras con comportamientos aberrantes. Los lotes se diferenciaron por días de corrida de los microarreglos.
+En primer lugar, se hizo un análisis exploratorio de los valores de intensidad lumínica de ambos canales de cada microarreglo muestra, para identificar efectos de lote y muestras con comportamientos aberrantes. Los lotes se diferenciaron por días de corrida de los microarreglos (las muestras y sus lotes correspondientes se pueden consultar en el archivo CSV \Sexpr{i=+1; name_tablas[i]}).
 
-En las figuras \ref{fig:raw_red_boxplot} y \ref{fig:raw_green_boxplot} se muestran los \textit{boxplot} de los valores de intensidad lumínica (transformados a $\log_2$ para facilitar la visualización), de los canales rojo y verde, respectivamente.
+En las figuras \ref{fig:raw_red_boxplot} y \ref{fig:raw_green_boxplot} se muestran los \textit{boxplot} de los valores de intensidad lumínica (transformados a $\log_2$ para facilitar la visualización), de los canales rojo y verde, respectivamente. Como se puede observar, no hay aparente efecto de lote en las muestras.
 
 <<raw_red_boxplot, echo=FALSE, dev='tikz', fig.pos='H', fig.height = 4, fig.cap = "Boxplot por muestra de logaritmo de la intensidad lumínica del canal rojo">>=
 raw_red_boxplot
@@ -139,32 +161,47 @@ raw_red_boxplot
 raw_green_boxplot
 @
 
-\section*{\textit{Benchmark} con archivos generados \texttt{R}}
+Posteriormente, se llevó a cabo la normalización y el genotipado de las muestras. Para ello se utilizó el algoritmo para llamado de variantes KRLMM \cite{liu2014krlmm}, desarrollado especialmente para variantes de baja frecuencia y para plataformas de microarreglos personalizadas. La desventaja de este método radica en la poca flexibilidad para elegir métodos de normalización, dado que el único que se puede utilizar es la normalización por cuantiles de las muestras dentro de los canales, y normalización a nivel de banda de chip. Como se muestra en las figuras \ref{fig:norm_red_boxplot} y \ref{fig:norm_green_boxplot}, posterior a la normalización no se observa la homogeneidad esperada en los valores de los cuantiles de los valores de intensidad, tanto en los canales rojo como verde.
+
+<<norm_red_boxplot, echo=FALSE, dev='tikz', fig.pos='H', fig.height = 4, fig.cap = "Boxplot por muestra de logaritmo de la intensidad lumínica del canal rojo">>=
+norm_red_boxplot
+@
+
+<<norm_green_boxplot, echo=FALSE, dev='tikz', fig.pos='H', fig.height = 4, fig.cap = "Boxplot de logaritmo de la intensidad lumínica del canal verde por muestra">>=
+norm_green_boxplot
+@
+
+\section*{\textit{Benchmark} con archivos generados en \texttt{R}}
+
+La metodología utilizada para comparar el genotipado con el paquete \texttt{crlmm} y con GenomeStudio fue el mismo que en los análisis anteriores.
+
+Dado que con el algoritmo CRLMM no se obtienen los nucleótidos correspondiente en cada alelo, sino que sólo se hace el llamado para identificar si el individuo es heterocigoto (AB), u homocigoto al alelo A o B (AA/BB), no se utilizaron los archivos MAP y PED generados en los análisis anteriores, sino que se exportaron los genotipos con este mismo formato desde GenomeStudio. Para ello, desde la plataforma se guardó un archivo en formato CSV con la tabla de variantes y la subcolumna \textbf{GType}, seleccionando \textbf{File | Export Data}. Ya en el mismo formato, se hizo una comparación de cada uno de los genotipos de cada alelo de las muestras.
+
+En la figura \ref{fig:prop_diff_by_sample_barplot_r_gs}, se muestran a modo de gráfico de barras las proporciones de diferencias entre genotipos de los alelos para cada una de las muestras, entre el llamado de genotipos con \texttt{crlmm} y GenomeStudio; una proporción de 0 indicaría coincidencia perfecta (no hay ninguna diferencia entre ambos métodos). Todas las muestras difieren en menos del 5\% entre ambos algoritmos. Lo mismo se puede observar con el gráfico de la distribución de las proporciones de diferencias \ref{fig:prop_diff_by_sample_density_r_gs}; la mayor concentración de proporciones de diferencias se encuentra entre 0 y 0.03.
+
+<<prop_diff_by_sample_barplot_r_gs, echo=FALSE, dev='tikz', fig.pos='H', fig.height = 4, fig.cap = "Gráfico de barras de las proporciones de diferencias entre genotipos de alelos para todas las muestras obtenidos con CRLMM y GenCall de GenomeStudio">>=
+prop_diff_by_sample_barplot_r_gs
+@
+
+<<prop_diff_by_sample_density_r_gs, echo=FALSE, dev='tikz', fig.pos='H', fig.height = 4, fig.cap = "Distribución de los valores de proporción de diferencias para todas las muestras obtenidos con CRLMM y GenCall de GenomeStudio">>=
+prop_diff_by_sample_density_r_gs
+@
+
+Mediante una prueba $t$ de Student con 50 grados de libertad ($n - 1$), y definiendo como hipótesis nula que la media de la proporción de diferencia de las muestras es mayor o igual a 0.05 ($H_o:\ \mu_{p} \geq 0.05$) e hipótesis alternativa que la media de la proporción de diferencia de las muestras es menor a 0.05 ($H_a:\ \mu_{p} < 0.05$), es posible concluir que el llamado de genotipos con el algoritmo CRLMM y el GenCall de GenomeStudio, difieren en promedio en menos del 5\% de variantes, con un 99\% de confianza.
+
+También se obtuvo la frecuencia absoluta de diferencia entre métodos de cada variante, así como el número de variantes por frecuencia de diferencia. En este caso, es importante resaltar que una importante cantidad de variantes resultan con la máxima frecuencia de 51 (21303 variantes), lo cual puede indicar que la parametrización del algoritmo CRLMM puede no ser la más adecuada para este análisis. Sin embargo, y como se indicó anteriormente, la paquetería \texttt{crlmm} no muy flexible ni permite cambiar ciertos parámetros cuando se analiza un microarreglo personalizado o que no se encuentra en su base de datos.
+
+Los CSV con la proporciones de diferencias por muestra, frecuencia absoluta de diferencia y número de variantes por frecuencia de diferencia se encuentran en los archivos \Sexpr{i=+1; name_tablas[i]}, \Sexpr{i=+1; name_tablas[i]} y \Sexpr{i=+1; name_tablas[i]}, respectivamente.
 
 \section*{Conclusiones}
 
+A partir del \textit{Benchmark} realizado, se comprobó la reproducibilidad de los resultados entregados por Código 46 por medio de la plataforma GenomeStudio de Illumina. Se puede decir con un 99\% de confianza, que en promedio más del 99\% del llamado de genotipos son reproducibles en cualquier muestra que se seleccione. Este número puede incrementar si se evita la variabilidad en algunas partes del flujo del análisis, como en el \textit{clustering} de genotipos, mediante el uso del archivo EGT.
+
+También se pudo verificar que las réplicas técnicas de las muestras generan resultados muy similares entre éstas, asegurando la reproducibilidad del trabajo en laboratorio y confirmando que factores como el efecto de lote o el personal que manipula los microarreglos no introducen variaciones significativas.
+
+También se corroboró la eficacia de la plataforma de GenomeStudio contra otros métodos alternativos de análisis, en este caso el algoritmo CRLMM. A pesar de que se espera que los resultados del genotipado entre ambos métodos, se espera que en promedio sea igual en más de un 95\% con un 99\% de confianza, la paquetería \texttt{crlmm} no está lo suficientemente documentada, además de contar con \textit{bugs} difíciles de identificar, no ser muy flexible en la parametrización del algoritmo y no generar normalizaciones lo suficientemente satisfactorias, sin contar que el tiempo de desarrollo y la curva de aprendizaje de dicha herramienta es significativamente más compleja que el uso de GenomeStudio.
+
 \bibliographystyle{unsrt}
 \bibliography{repbench}
-
-\section*{Figuras y tablas}
-
-\subsection*{Figuras}
-
-En el \textit{dossier} entregado junto con el reporte se pueden encontrar todas las figuras descritas a lo largo de éste en formato PNG, adjuntas en la subcarpeta \textbf{Figuras}.
-
-A continuación, se enumeran las figuras con una breve descripción.
-
-\subsection*{Tablas}
-
-En el \textit{dossier} entregado junto con el reporte se pueden encontrar todas las tablas descritas a lo largo de éste en formato CSV, adjuntas en la subcarpeta \textbf{Tablas}.
-
-A continuación, se enumeran las tablas con una breve descripción.
-
-\begin{tabular}{ l | l }
-  1_benchmark_samplesheet.csv & Muestras utilizadas para análisis y genotipificación en GenomeStudio, y metadatos requeridos por el software \hline
-  2_ & Tabla CNV \hline
-  
-  
-\end{tabular}
 
 \end{document}
