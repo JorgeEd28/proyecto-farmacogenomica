@@ -3,7 +3,7 @@ library(shiny)
 
 `%then%` <- shiny:::`%OR%`
 
-options(shiny.maxRequestSize=150*1024^2, shiny.sanitize.errors = TRUE)
+options(shiny.maxRequestSize=2*1024^3, shiny.sanitize.errors = TRUE)
 
 shinyServer(function(input, output) {
   # Initialize reactive variables
