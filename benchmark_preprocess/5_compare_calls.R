@@ -136,6 +136,7 @@ print(frec_bar)
 dev.off()
 
 # Save RDS and CSV
+saveRDS(dist_geno, file.path(outdir, "dist_geno.rds"))
 saveRDS(prop_bar, file.path(outdir, "prop_diff_by_sample_barplot_r_gs.rds"))
 saveRDS(prop_dens, file.path(outdir, "prop_diff_by_sample_density_r_gs.rds"))
 saveRDS(frec_bar, file.path(outdir, "frec_diff_by_snp_barplot_r_gs.rds"))
