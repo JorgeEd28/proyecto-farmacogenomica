@@ -146,7 +146,7 @@ Como en el caso de la comparación entre archivos PED, se obtuvo la frecuencia a
 
 \subsection*{Proporciones de genotipos}
 
-Finalmente, como método adicional para asegurar la calidad de las muestras analizadas en GenomeStudio, se analizaron las proporciones de genotipos, homocigotos y heterocigotos, en las muestras, ya que microarreglos de poca calidad se caracterizan por distribuciones aberrantes de intensidad, exceso de variantes no caracterizadas perdidas o heterocigotas, o ambas \cite{morgan2015argyle}. Como se puede ver en la figura \ref{fig:dist_geno}, la distribución de genotipos es sumamente uniforme entre las muestras, teniendo una proporción de alrededor del 85% de variantes homocigotas, y 15% heterocigotas. El procentaje de no genotipificados es despreciable en todas las muestras.
+Finalmente, como método adicional para asegurar la calidad de las muestras analizadas en GenomeStudio, se analizaron las proporciones de genotipos, homocigotos y heterocigotos, en las muestras, ya que microarreglos de poca calidad se caracterizan por distribuciones aberrantes de intensidad, exceso de variantes no caracterizadas perdidas o heterocigotas, o ambas \cite{morgan2015argyle}. Como se puede ver en la figura \ref{fig:dist_geno}, la distribución de genotipos es sumamente uniforme entre las muestras, teniendo una proporción de alrededor del 85\% de variantes homocigotas, y 15\% heterocigotas. El procentaje de no genotipificados es despreciable en todas las muestras.
 
 <<dist_geno, dev='tikz', fig.pos='H', fig.height = 4, fig.cap = "Distribución de genotipos">>=
 dist_geno
