@@ -50,6 +50,12 @@ rownames(calls_crlmm) <- c()
 colnames(calls_gs) <- sub("*(.GType)", "", colnames(calls_gs))
 calls_gs <- select(calls_gs, -Name)
 
+# Reshape calls matrix
+melt_calls_gs <- calls_gs
+colnames(melt_calls_gs) <- sub("^X[0-9]*?", "", colnames(melt_calls_gs))
+melt_calls_gs <- melt(melt_calls_gs, measure.vars = colnames(melt_calls_gs),
+                      variable.name = "Microarreglo", value.name = "Genotipo")
+
 # Recode genotyped
 dict = c("AA" = 1, "AB" = 2, "BB" = 3)
 calls_gs_recode <- calls_gs %>%
@@ -86,6 +92,12 @@ frec_by_n_variants <- frec_by_snp %>% group_by(frecuencia) %>%
 
 # Plots -----------------------------------------------------------------------
 
+# Distribution of genotype calls
+dist_geno <- ggplot(melt_calls_gs, aes(x = Microarreglo, fill = Genotipo)) +
+  geom_bar() + theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90)) +
+  labs(x = "Microarreglo", y = "Número de variantes")
+
 # Bar plot by sample
 prop_bar <- ggplot(prop_by_sample, aes(x = reorder(muestra, -proporcion), y = proporcion, fill = proporcion)) +
   geom_bar(stat = "identity", show.legend=F) + theme_minimal() + 
@@ -107,6 +119,10 @@ frec_bar <- ggplot(frec_by_snp[1:20,], aes(x = reorder(variante, -frecuencia), y
 # Save RDS --------------------------------------------------------------------
 
 # Save PNG
+png(file.path(outdir, "dist_geno.png"), width = 2400, height = 1200, res = 300)
+print(dist_geno)
+dev.off()
+
 png(file.path(outdir, "prop_diff_by_sample_barplot_r_gs.png"), width = 2400, height = 1200, res = 300)
 print(prop_bar)
 dev.off()
