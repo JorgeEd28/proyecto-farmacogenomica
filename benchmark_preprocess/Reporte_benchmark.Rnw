@@ -44,6 +44,7 @@ raw_red_boxplot <- readRDS(file.path(dir, "raw_red_boxplot.rds"))
 raw_green_boxplot <- readRDS(file.path(dir, "raw_green_boxplot.rds"))
 norm_red_boxplot <- readRDS(file.path(dir, "norm_red_boxplot.rds"))
 norm_green_boxplot <- readRDS(file.path(dir, "norm_green_boxplot.rds"))
+dist_geno <- readRDS(file.path(dir, "dist_geno.rds"))
 
 # PEDs benchmark
 prop_diff_by_sample_barplot <- readRDS(file.path(dir, "prop_diff_by_sample_barplot.rds"))
@@ -143,6 +144,14 @@ reps_prop_diff_by_sample_density
 
 Como en el caso de la comparación entre archivos PED, se obtuvo la frecuencia absoluta de diferencia entre réplicas de cada variante, así como el número de variantes por frecuencia de diferencia. Dichas tablas se pueden encontrar en los CSV \texttt{\Sexpr{name_tablas[7]}} y \texttt{\Sexpr{name_tablas[8]}}. Dado que las muestras con réplicas son muy pocas, no es posible confirmar si aquellas variantes que difieren en ocho pares de muestras, se debe a algun factor de confusión, o si es producto de la variabilidad intrínseca entre muestras en cada uno de los casos.
 
+\subsection*{Proporciones de genotipos}
+
+Finalmente, como método adicional para asegurar la calidad de las muestras analizadas en GenomeStudio, se analizaron las proporciones de genotipos, homocigotos y heterocigotos, en las muestras, ya que microarreglos de poca calidad se caracterizan por distribuciones aberrantes de intensidad, exceso de variantes no caracterizadas perdidas o heterocigotas, o ambas \cite{morgan2015argyle}. Como se puede ver en la figura \ref{fig:dist_geno}, la distribución de genotipos es sumamente uniforme entre las muestras, teniendo una proporción de alrededor del 85% de variantes homocigotas, y 15% heterocigotas. El procentaje de no genotipificados es despreciable en todas las muestras.
+
+<<dist_geno, dev='tikz', fig.pos='H', fig.height = 4, fig.cap = "Distribución de genotipos">>=
+dist_geno
+@
+
 \section*{Análisis y y genotipificación en \texttt{R}}
 
 Para la la normalización, análisis y genotipificación en \texttt{R}, se utilizó el paquete \texttt{crlmm} \cite{scharpf2011using}, a través de \texttt{Bioconductor}, diseñado con modelos multinivel para plataformas de microarreglos como Affymetrix e Illumina \cite{ritchie2009r}. Éste paquete es una implementación del algoritmo CRLMM para producir el llamado de genotipos, puntajes de confianza y métricas de calidad adicionales para las variantes y las muestras.
@@ -206,7 +215,6 @@ dir.create("tables")
 name_tablas <- file.path("tables", name_tablas)
 file.copy(from = path_tables, to = name_tablas)
 @
-
 
 \bibliographystyle{unsrt}
 \bibliography{repbench}
