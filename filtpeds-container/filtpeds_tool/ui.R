@@ -106,6 +106,7 @@ shinyUI(navbarPage(theme = shinytheme("flatly"),
            
            # Download files ------------------------------------------------------------
            tabPanel("Download files",
+                    h4("Generate new files"),
                     # New MAP
                     downloadButton(outputId = "download_map",
                                    label = "Download new MAP"),
@@ -114,6 +115,9 @@ shinyUI(navbarPage(theme = shinytheme("flatly"),
                                    label = "Download new annotation dataset"),
                     # New PED
                     downloadButton(outputId = "download_ped",
-                                   label = "Download new PED")
+                                   label = "Download new PED"),
+                    # Generate report
+                    h4("Generate report"),
+                    downloadButton("report", "Generate report")
            )
 ))

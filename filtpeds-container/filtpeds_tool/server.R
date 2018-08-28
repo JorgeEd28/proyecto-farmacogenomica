@@ -132,8 +132,8 @@ shinyServer(function(input, output) {
     
     anno_probes_unique <- v$anno_probes %>% 
       group_by(IlmnID, Name, Chr, MapInfo, Variant) %>% 
-      summarize(Ensembl = paste(unique(Ensembl), collapse = ", "), 
-                Gene = paste(unique(Gene), collapse = ", ")) %>%
+      summarize(Ensembl = paste(unique(Ensembl), collapse = "|"), 
+                Gene = paste(unique(Gene), collapse = "|")) %>%
       ungroup()
     
     # Filter
@@ -239,4 +239,29 @@ shinyServer(function(input, output) {
                     row.names = FALSE, quote = FALSE)
       }
     )
+  
+  # Report
+  output$report <- 
+    downloadHandler(
+      filename = paste("filtpeds-report-", Sys.Date(), ".html", sep = ""),
+      content = function(file) {
+        # Copy the report file to a temporary directory before processing it
+        tempReport <- file.path(tempdir(), "report.Rmd")
+        file.copy("www/report.Rmd", tempReport, overwrite = TRUE)
+        
+        # Set up parameters to pass to Rmd document
+        params <- list(type = input$filter_type,
+                       probes = v$anno_probes,
+                       list = v$filter_list,
+                       m1 = v$map,
+                       m2 = v$new_map,
+                       p = v$ped)
+        
+        # Knit the document
+        rmarkdown::render(tempReport, output_file = file,
+                          params = params,
+                          envir = new.env(parent = globalenv())
+        )
+      }
+  )
 })
