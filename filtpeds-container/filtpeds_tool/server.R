@@ -183,7 +183,7 @@ shinyServer(function(input, output) {
     
     tryCatch(
       {
-        v$ped <- data.table::fread(input$ped$datapath, sep = "\t", 
+        v$ped <- data.table::fread(input$ped$datapath, sep = "\t", header = FALSE,
                                    select = col, colClasses = "character",
                                    verbose = TRUE, data.table = FALSE)
       },
