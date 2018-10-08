@@ -35,6 +35,7 @@ COPY shiny-server.sh /usr/bin/shiny-server.sh
 COPY shiny-server.conf /etc/shiny-server/shiny-server.conf
 ## Copy app to docker
 COPY /filtpeds_tool /srv/shiny-server/
+RUN chmod -R 777 /srv/shiny-server/
 
 EXPOSE 80
 
